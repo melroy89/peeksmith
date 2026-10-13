@@ -77,6 +77,11 @@ namespace Peek.Ui {
     [GtkChild]
     private unowned Popover pop_menu;
 
+    [GtkChild]
+    private unowned Gtk.ModelButton share_button;
+    private File? last_saved_file;
+    private ShareDialog? share_dialog;
+
     private uint start_recording_event_source = 0;
     private uint size_indicator_timeout = 0;
     private uint delay_indicator_timeout = 0;
@@ -516,6 +521,21 @@ namespace Peek.Ui {
     }
 
     [GtkCallback]
+    private void on_share_button_clicked () {
+      pop_menu.hide ();
+      if (last_saved_file == null) return;
+      if (share_dialog == null) {
+        share_dialog = new ShareDialog (this, last_saved_file);
+        set_keep_above (false);
+        share_dialog.destroy.connect (() => {
+          share_dialog = null;
+          set_keep_above (true);
+        });
+      }
+      share_dialog.present ();
+    }
+
+    [GtkCallback]
     private void on_about_button_clicked (Button source) {
       pop_menu.hide ();
       AboutDialog.present_single_instance (this);
@@ -827,6 +847,8 @@ namespace Peek.Ui {
     }
 
     private void handle_saved_file (File file) {
+      last_saved_file = file;
+      share_button.sensitive = file.get_basename ().down ().has_suffix (".gif");
       save_preferred_save_folder (file);
 
 #if ! DISABLE_OPEN_FILE_MANAGER

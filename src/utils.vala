@@ -41,7 +41,7 @@ namespace Peek {
 
     public static bool is_exit_status_success (int status) {
       try {
-        if (Process.check_exit_status (status)) {
+        if (Process.check_wait_status (status)) {
           return true;
         }
       }

@@ -68,8 +68,8 @@ jobs:
           apt-get update
           apt-get install --no-install-recommends -y \
             ca-certificates git build-essential debhelper meson ninja-build \
-            valac libgtk-3-dev libglib2.0-dev libkeybinder-3.0-dev gettext \
-            libxml2-utils txt2man desktop-file-utils appstream-util
+            valac libsoup-3.0-dev libjson-glib-dev libgtk-3-dev libglib2.0-dev libkeybinder-3.0-dev gettext \
+            libxml2-utils txt2man desktop-file-utils appstream-util xvfb xauth
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
@@ -146,8 +146,9 @@ jobs:
       - name: Install packaging dependencies
         run: |
           dnf install -y git rpm-build redhat-rpm-config gcc meson ninja-build \
-            vala vala-devel gettext gtk3-devel keybinder3-devel \
-            desktop-file-utils libappstream-glib libxml2 txt2man gzip
+            vala vala-devel gettext libsoup3-devel json-glib-devel gtk3-devel keybinder3-devel \
+            desktop-file-utils libappstream-glib libxml2 txt2man gzip \
+            xorg-x11-server-Xvfb xorg-x11-xauth
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false

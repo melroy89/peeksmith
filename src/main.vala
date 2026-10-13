@@ -19,7 +19,7 @@ int main (string[] args) {
 
   // Writing the stop command to a recorder that already exited must
   // surface as an error, not kill Peek.
-  Posix.signal (Posix.SIGPIPE, Posix.SIG_IGN);
+  Posix.signal (Posix.Signal.PIPE, Posix.SIG_IGN);
 
   // Setup gettext
   Intl.setlocale (LocaleCategory.ALL, "");

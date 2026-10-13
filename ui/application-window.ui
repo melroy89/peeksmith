@@ -86,6 +86,14 @@ Author: Philipp Wolfer <ph.wolfer@gmail.com>
           </packing>
         </child>
         <child>
+          <object class="GtkModelButton" id="share_button">
+            <property name="visible">True</property>
+            <property name="sensitive">False</property>
+            <property name="text" translatable="yes">Share last recording…</property>
+            <signal name="clicked" handler="on_share_button_clicked" swapped="no"/>
+          </object>
+        </child>
+        <child>
           <object class="GtkModelButton" id="preferences_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>

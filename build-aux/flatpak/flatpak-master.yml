@@ -7,6 +7,7 @@ sdk-extensions:
 branch: main
 command: peeksmith
 finish-args:
+  - --share=network
   - --share=ipc
   - --socket=x11
   - --env=GDK_BACKEND=x11
@@ -112,6 +113,7 @@ modules:
     buildsystem: meson
     config-opts:
       - --buildtype=release
+      - -Dbuild-tests=false
     build-options:
       cflags: -L/app/lib
     sources:

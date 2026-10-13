@@ -1,5 +1,5 @@
 Name:           peeksmith
-Version:        1.6.0
+Version:        1.6.1
 Release:        1%{?dist}
 Summary:        Simple screen recorder with an easy to use interface
 
@@ -18,9 +18,14 @@ BuildRequires:  pkgconfig(keybinder-3.0)
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  libxml2
-BuildRequires:  pkgconfig(glib-2.0) >= 2.52
+BuildRequires:  pkgconfig(glib-2.0) >= 2.70
+BuildRequires:  pkgconfig(libsoup-3.0)
+BuildRequires:  pkgconfig(json-glib-1.0)
 BuildRequires:  txt2man
 BuildRequires:  gzip
+BuildRequires:  xorg-x11-server-Xvfb
+BuildRequires:  xorg-x11-xauth
+Requires:       ca-certificates
 Requires:       ffmpeg >= 3
 Requires:       gstreamer1-plugins-good >= 1.2
 Recommends:     gstreamer1-plugins-ugly
@@ -70,6 +75,9 @@ appstream-util validate-relax --nonet %{buildroot}/%{_datadir}/metainfo/*.appdat
 
 
 %changelog
+* Tue Oct 13 2026 Melroy van den Berg <melroy@melroy.org> - 1.6.1-1
+- Add opt-in Imgur GIF sharing with configurable public client ID
+
 * Tue Oct 13 2026 Melroy van den Berg <melroy@melroy.org> - 1.6.0-1
 - First Peeksmith release with recording fixes and independent desktop identity
 

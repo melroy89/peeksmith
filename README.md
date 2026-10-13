@@ -64,11 +64,27 @@ Peeksmith uses its own application ID (`org.melroy.Peeksmith`), settings, and
 cache directory, so it can be installed alongside upstream Peek. Existing Peek
 preferences are not automatically migrated.
 
+## Sharing a recording
+After saving a GIF, choose **Share last recording…** from the window menu.
+Register an Imgur API application through the [Imgur API documentation](https://apidocs.imgur.com/)
+and enter its **public client ID** in the sharing dialog. The ID is saved locally;
+never enter a client secret. Click **Upload to Imgur** to share the recording.
+Saving a recording does not upload it.
+
+Anyone with the returned link can view your upload. Review recordings for private
+information before sharing. GIF files up to 10 MiB are supported; APNG, WebM and
+MP4 uploads are unavailable. Imgur may convert animations. Use **Copy link** or
+**Open link** after uploading. Save **Copy deletion details** privately before
+closing the dialog: these details allow removal through the Imgur API and are
+not retained by Peeksmith. Cancellation or connection loss after sending data
+cannot guarantee that Imgur did not receive the upload.
+
 ## Requirements
 ### Runtime
 
 - GTK+ >= 3.22
-- GLib >= 2.52
+- GLib >= 2.70
+- libsoup 3 and JSON-GLib (Imgur sharing), plus CA certificates for HTTPS
 - [libkeybinder3](https://github.com/kupferlauncher/keybinder)
 - FFmpeg >= 3 with libx264, libx264rgb, and libvpx-vp9 encoders
 - GStreamer 'Good' plugins (for recording on GNOME Shell)
@@ -76,10 +92,11 @@ preferences are not automatically migrated.
 
 ### Development
 
-- Vala compiler >= 0.22
+- Vala compiler >= 0.48
 - Meson >= 0.47.0
 - Gettext (>= 0.19 for localized .desktop entry)
 - txt2man (optional for building man page)
+- Xvfb and xauth (when building the test suite)
 
 
 ## Installation
