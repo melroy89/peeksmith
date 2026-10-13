@@ -1,0 +1,269 @@
+name: Release packages
+
+on:
+  push:
+    tags: ['v[0-9]*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: version
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [ "$REF_TYPE" = tag ]; then
+            version=$(python3 tools/release-version.py --tag "$TAG")
+          else
+            version=$(python3 tools/release-version.py)
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  deb:
+    name: Build ${{ matrix.target }} package
+    needs: version
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    container: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: ubuntu22.04
+            image: ubuntu:22.04
+          - target: ubuntu24.04
+            image: ubuntu:24.04
+          - target: ubuntu26.04
+            image: ubuntu:26.04
+          - target: debian12
+            image: debian:12
+          - target: debian13
+            image: debian:13
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - name: Install packaging dependencies
+        run: |
+          apt-get update
+          apt-get install --no-install-recommends -y \
+            ca-certificates git build-essential debhelper meson ninja-build \
+            valac libgtk-3-dev libglib2.0-dev libkeybinder-3.0-dev gettext \
+            libxml2-utils txt2man desktop-file-utils appstream-util
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build package and run tests
+        run: tools/build-package.sh deb
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-input-${{ matrix.target }}
+          path: dist/*.deb
+          if-no-files-found: error
+
+  install-deb:
+    name: Install and test ${{ matrix.target }}
+    needs: [version, deb]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    container: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: ubuntu22.04
+            image: ubuntu:22.04
+          - target: ubuntu24.04
+            image: ubuntu:24.04
+          - target: ubuntu26.04
+            image: ubuntu:26.04
+          - target: debian12
+            image: debian:12
+          - target: debian13
+            image: debian:13
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - name: Prepare clean installation environment
+        run: |
+          apt-get update
+          apt-get install --no-install-recommends -y ca-certificates git
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-input-${{ matrix.target }}
+          path: dist
+      - name: Install with declared dependencies
+        run: apt-get install --no-install-recommends -y ./dist/*.deb
+      - name: Install validation tools
+        run: |
+          apt-get install --no-install-recommends -y \
+            desktop-file-utils dbus-x11 xvfb xauth openbox xdotool librsvg2-common procps
+      - name: Verify installed identity and recording formats
+        run: |
+          tools/check-installed.sh "$VERSION"
+          for format in gif apng webm mp4; do
+            echo "Testing $format"
+            PEEKSMITH_FORMAT="$format" timeout 120 xvfb-run -a -s '-screen 0 1280x800x24' \
+              dbus-run-session -- bash -c 'openbox >/tmp/openbox.log 2>&1 & sleep 1; tests/ui-smoke.sh /usr/bin/peeksmith'
+          done
+      - name: Verify removal
+        run: |
+          apt-get purge -y peeksmith
+          test ! -e /usr/bin/peeksmith
+          test ! -e /usr/share/applications/org.melroy.Peeksmith.desktop
+
+  rpm:
+    name: Build Fedora 44 package
+    needs: version
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    container: fedora:44
+    steps:
+      - name: Install packaging dependencies
+        run: |
+          dnf install -y git rpm-build redhat-rpm-config gcc meson ninja-build \
+            vala vala-devel gettext gtk3-devel keybinder3-devel \
+            desktop-file-utils libappstream-glib libxml2 txt2man gzip
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build package and run tests
+        run: tools/build-package.sh rpm
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-input-fedora44
+          path: dist/*.rpm
+          if-no-files-found: error
+
+  install-rpm:
+    name: Install and test Fedora 44
+    needs: [version, rpm]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    container: fedora:44
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - name: Prepare clean installation environment
+        run: |
+          dnf install -y git \
+            https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-input-fedora44
+          path: dist
+      - name: Install with declared dependencies
+        run: dnf install -y ./dist/peeksmith-*.x86_64.rpm
+      - name: Install validation tools
+        run: |
+          dnf install -y desktop-file-utils dbus-x11 xorg-x11-server-Xvfb \
+            xorg-x11-xauth openbox xdotool librsvg2 procps-ng
+      - name: Verify installed identity and recording formats
+        run: |
+          tools/check-installed.sh "$VERSION"
+          for format in gif apng webm mp4; do
+            echo "Testing $format"
+            PEEKSMITH_FORMAT="$format" timeout 120 xvfb-run -a -s '-screen 0 1280x800x24' \
+              dbus-run-session -- bash -c 'openbox >/tmp/openbox.log 2>&1 & sleep 1; tests/ui-smoke.sh /usr/bin/peeksmith'
+          done
+      - name: Verify removal
+        run: |
+          dnf remove -y peeksmith
+          test ! -e /usr/bin/peeksmith
+          test ! -e /usr/share/applications/org.melroy.Peeksmith.desktop
+
+  source:
+    needs: version
+    runs-on: ubuntu-24.04
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Create source archive
+        run: |
+          mkdir -p dist
+          git archive --format=tar --prefix="peeksmith-$VERSION/" HEAD | \
+            gzip -n > "dist/peeksmith-$VERSION.tar.gz"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-input-source
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+  bundle:
+    needs: [ci, install-deb, install-rpm, source]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: release-input-*
+          merge-multiple: true
+          path: dist
+      - name: Generate checksums
+        working-directory: dist
+        run: sha256sum *.deb *.rpm *.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-bundle
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+
+  draft:
+    if: github.ref_type == 'tag'
+    needs: [version, bundle]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ github.ref_name }}
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-bundle
+          path: dist
+      - name: Create draft release for final review
+        run: |
+          if draft=$(gh release view "$TAG" --json isDraft --jq .isDraft 2>/dev/null); then
+            if [ "$draft" != true ]; then
+              echo 'Refusing to modify an already published release' >&2
+              exit 1
+            fi
+            gh release upload "$TAG" dist/* --clobber
+            gh release edit "$TAG" --title "Peeksmith $VERSION" \
+              --notes-file "docs/releases/$VERSION.md"
+          else
+            gh release create "$TAG" --verify-tag --draft \
+              --title "Peeksmith $VERSION" --notes-file "docs/releases/$VERSION.md" dist/*
+          fi

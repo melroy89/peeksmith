@@ -1,0 +1,26 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Peeksmith
+Source: https://github.com/melroy89/peeksmith
+
+Files: *
+Copyright: 2015-2024 Philipp Wolfer <ph.wolfer@gmail.com>
+           2026 Melroy van den Berg <melroy@melroy.org>
+           Other contributors as credited in the individual source files
+License: GPL-3+
+ Peeksmith is free software: you can redistribute it and/or modify it under
+ the terms of the GNU General Public License as published by the Free Software
+ Foundation, either version 3 of the License, or any later version.
+ .
+ On Debian systems the complete license is in
+ /usr/share/common-licenses/GPL-3. The source archive also includes LICENSE.
+
+Files: data/icons/org.melroy.Peeksmith.svg
+Copyright: GNOME Design Team
+License: CC-BY-SA-4.0
+ The embedded SVG metadata identifies this license and creator.
+ The complete license is included in LICENSES/CC-BY-SA-4.0.txt.
+
+Files: tools/print-description.py
+Copyright: 2017 Philipp Wolfer <ph.wolfer@gmail.com>
+License: MIT
+ The complete license is included in LICENSES/MIT.txt and the source file.

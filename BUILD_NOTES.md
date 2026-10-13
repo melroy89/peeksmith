@@ -29,7 +29,7 @@ Build jobs also check a staged installation; CI does not exercise real screen
 capture or publish packages.
 
 For an isolated X11 recording smoke test, install FFmpeg, Openbox, xdotool,
-Xvfb, xauth, and D-Bus, then run from the source root:
+Xvfb, xauth, procps (procps-ng on Fedora), and D-Bus, then run from the source root:
 
     xvfb-run -a -s "-screen 0 1280x800x24" dbus-run-session -- \
       bash -c 'openbox & sleep 1; tests/ui-smoke.sh builddir/src/peeksmith'
@@ -52,27 +52,55 @@ the screen. GNOME Shell coverage requires a real GNOME session and can use
     ninja peeksmith-pot
 
 
-## Packaging
+## Packaging and releases
 
-### Debian package
+Release metadata is checked with `python3 tools/release-version.py`. Meson,
+Debian, RPM, AppStream, the changelog, and `docs/releases/<version>.md` must agree.
 
-#### Build requirements
- - meson (>= 0.47.0)
- - valac (>= 0.22)
- - libgtk-3-dev (>= 3.22)
- - libkeybinder-3.0-dev
- - libxml2-utils
- - gettext (>= 0.19 for localized .desktop entry)
- - txt2man (optional for building man page)
- - gzip (optional for building man page)
+### Debian and Ubuntu
 
-#### Runtime requirements
- - libgtk-3-0 (>= 3.22)
- - libglib2.0-0 (>= 2.52)
- - libkeybinder-3.0-0
- - ffmpeg >= 3 with libx264, libx264rgb, and libvpx-vp9 encoders
+Install the build dependencies listed in `debian/control`, then run:
 
-### Packaging
+    tools/build-package.sh deb
 
-The recipes under `build-aux/` are legacy upstream infrastructure and are not
-verified Peeksmith distribution channels. Build from source as described above.
+This uses debhelper and Meson, runs the registered tests, and writes a
+platform-specific `.deb` to `dist/`. Shared-library dependencies are generated
+by `dh_shlibdeps`; FFmpeg is an explicit runtime dependency. The build happens
+in a temporary copy and leaves the checkout untouched.
+
+### Fedora
+
+Install the `BuildRequires` from `rpm/peeksmith.spec`, plus `rpm-build` and
+`redhat-rpm-config`, then run:
+
+    tools/build-package.sh rpm
+
+This runs the Meson tests and produces binary and source RPMs in `dist/`.
+Installation requires RPM Fusion's full FFmpeg package for the x264 encoders.
+
+### Release workflow
+
+`.github/workflows/release.yml` supports a manual dry run and `vMAJOR.MINOR.PATCH`
+tag pushes. Both run the existing CI workflow, build native x86-64 packages for
+Ubuntu 22.04/24.04/26.04, Debian 12/13, and Fedora 44, and test dependency
+resolution, installed branding and GSettings, real X11 recording in all four formats, and removal
+in clean distribution containers. Source archives and SHA-256 checksums are
+collected into the downloadable `release-bundle` Actions artifact.
+
+A manual run does not create a GitHub release. A matching version tag creates a
+**draft** release with the assets only after every required job passes. Review
+the draft and publish it explicitly when ready. Packages are not GPG signed.
+Checksums detect corruption and are not a substitute for package signatures.
+
+For 1.6.0:
+
+1. Review release notes, confirm the date in AppStream and Debian/RPM changelogs,
+   including the release date in `CHANGES.md`.
+2. Commit and push the release preparation, then run the release workflow
+   manually and check the exact commit's complete build/install matrix.
+3. Tag that validated commit with `v1.6.0` and push the tag.
+4. Check the tag workflow, download and verify the draft assets, then publish
+   the reviewed draft and update the README's preparation notice.
+
+The recipes under `build-aux/` are legacy upstream infrastructure; Flatpak,
+Snap, and AppImage distribution are outside this native-package release.

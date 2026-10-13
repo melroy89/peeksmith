@@ -1,6 +1,6 @@
 # Peeksmith - an animated GIF recorder
 [![Build and test](https://github.com/melroy89/peeksmith/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/melroy89/peeksmith/actions/workflows/ci.yml)
-[![Upstream GitHub release](https://img.shields.io/github/release/phw/peek.svg)](https://github.com/phw/peek/releases)
+[![GitHub release](https://img.shields.io/github/v/release/melroy89/peeksmith)](https://github.com/melroy89/peeksmith/releases)
 [![License: GPL v3+](https://img.shields.io/badge/license-GPL%20v3%2B-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Upstream packaging status](https://repology.org/badge/tiny-repos/peek.svg)](https://repology.org/project/peek/packages)
 [![Upstream translation status](https://hosted.weblate.org/widgets/peek/-/svg-badge.svg)](https://hosted.weblate.org/engage/peek/?utm_source=widget)
@@ -21,6 +21,7 @@ Simple screen recorder with an easy to use interface
   - [Runtime](#runtime)
   - [Development](#development)
 - [Installation](#installation)
+  - [Release packages](#release-packages)
   - [Build from source](#build-from-source)
 - [Frequently Asked Questions](#frequently-asked-questions)
   - [How can I capture mouse clicks and/or keystrokes?](#how-can-i-capture-mouse-clicks-andor-keystrokes)
@@ -82,6 +83,22 @@ preferences are not automatically migrated.
 
 
 ## Installation
+### Release packages
+The first Peeksmith release, 1.6.0, is being prepared. Download assets will appear
+on the [releases page](https://github.com/melroy89/peeksmith/releases) after publication.
+
+Native x86-64 packages target Ubuntu 22.04, 24.04 and 26.04, Debian 12 and 13,
+and Fedora 44. Choose the asset matching your installed distribution version:
+
+- Debian/Ubuntu: `sudo apt install ./peeksmith-<version>-<distribution>-amd64.deb`
+- Fedora: `sudo dnf install ./peeksmith-<version>-1.fc44.x86_64.rpm`
+
+Fedora needs the `ffmpeg` package from [RPM Fusion](https://rpmfusion.org/Configuration)
+for the x264 encoders; `ffmpeg-free` is insufficient for GIF/APNG and MP4 recording.
+The release also includes source archives and `SHA256SUMS`. Download the checksum
+file beside your package, then run `sha256sum -c SHA256SUMS --ignore-missing`.
+Packages are unsigned. Run the installed application with `peeksmith` or its launcher.
+
 ### Build from source
 Peeksmith is built from this repository. Packages named `peek` in distribution
 repositories, Flathub, and upstream release downloads are the original Peek;

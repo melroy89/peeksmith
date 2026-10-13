@@ -12,6 +12,7 @@
 #   xvfb-run -a -s "-screen 0 1280x800x24" dbus-run-session -- \
 #     bash -c 'openbox & sleep 1; tests/ui-smoke.sh'
 set -euo pipefail
+export LC_ALL=C.UTF-8
 
 PEEKSMITH=$(realpath "${1:-builddir/src/peeksmith}")
 BACKEND=${PEEKSMITH_BACKEND:-ffmpeg}
@@ -81,6 +82,14 @@ PEEKSMITH_PID=$!
 WID=$(xdotool search --sync --classname peeksmith | tail -1)
 sleep 1
 xdotool windowactivate --sync "$WID" 2>/dev/null || true
+expect "main window title" "$(xdotool getwindowname "$WID")" Peeksmith
+gapplication action org.melroy.Peeksmith about
+sleep 1
+about=$(xdotool search --onlyvisible --name '^About Peeksmith$' | tail -1)
+[ -n "$about" ] || fail "About dialog does not identify Peeksmith"
+xdotool windowactivate --sync "$about" 2>/dev/null || true
+xdotool key Escape
+sleep 0.5
 
 echo "1. record and save"
 start_take 1; sleep 1.5; toggle

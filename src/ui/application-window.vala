@@ -98,6 +98,8 @@ namespace Peek.Ui {
       ScreenRecorder recorder) {
       Object (application: application);
 
+      this.title = _ ("Peeksmith");
+
       // Connect recorder signals
       this.recorder = recorder;
       this.recorder.recording_started.connect (() => {

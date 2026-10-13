@@ -1,4 +1,4 @@
-# Version 1.6.0 - unreleased
+# Version 1.6.0 - 2026-10-13
 - Rename this fork to Peeksmith, including the executable, desktop integration,
   application ID (`org.melroy.Peeksmith`), settings, cache, and translation domain
 - Integrated runtime fixes and regression tests from xl0/peek-ng through

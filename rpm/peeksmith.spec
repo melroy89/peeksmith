@@ -1,11 +1,11 @@
 Name:           peeksmith
-Version:        1.5.1
+Version:        1.6.0
 Release:        1%{?dist}
 Summary:        Simple screen recorder with an easy to use interface
 
-License:        GPLv3
+License:        GPL-3.0-or-later AND CC-BY-SA-4.0 AND MIT
 URL:            https://github.com/melroy89/peeksmith
-Source0:        https://github.com/melroy89/peeksmith/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        https://github.com/melroy89/peeksmith/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  meson
@@ -40,8 +40,12 @@ directly record to WebM or MP4 if you prefer.
 
 
 %build
-%meson -Dbuild-tests=false
+%meson -Dbuild-tests=true -Denable-keybinder=enabled
 %meson_build
+
+
+%check
+%meson_test
 
 
 %install
@@ -53,7 +57,8 @@ appstream-util validate-relax --nonet %{buildroot}/%{_datadir}/metainfo/*.appdat
 
 
 %files -f %{name}.lang
-%license LICENSE
+%license LICENSE LICENSES/CC-BY-SA-4.0.txt LICENSES/MIT.txt
+%doc README.md CHANGES.md
 %{_bindir}/%{name}
 %{_datadir}/applications/org.melroy.Peeksmith.desktop
 %{_datadir}/metainfo/org.melroy.Peeksmith.appdata.xml
@@ -65,6 +70,9 @@ appstream-util validate-relax --nonet %{buildroot}/%{_datadir}/metainfo/*.appdat
 
 
 %changelog
+* Tue Oct 13 2026 Melroy van den Berg <melroy@melroy.org> - 1.6.0-1
+- First Peeksmith release with recording fixes and independent desktop identity
+
 * Thu Mar 29 2018 Philipp Wolfer <ph.wolfer@gmail.com> -1.3.1
 - fix: Use yuv420p for VP9 encoding (#299)
 - fix: Disable animations and transitions on recording view overlays (#208)

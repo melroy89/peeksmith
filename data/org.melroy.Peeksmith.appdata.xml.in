@@ -41,11 +41,11 @@
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/phw/peek/master/data/screenshots/peek-preferences.png</image>
-      <caption>Peek's preferences dialog</caption>
+      <caption>The preferences dialog (upstream screenshot)</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/phw/peek/master/data/screenshots/peek-recording-itself.gif</image>
-      <caption>Peek is recording itself</caption>
+      <caption>Self-recording (upstream screenshot)</caption>
     </screenshot>
   </screenshots>
 
@@ -81,6 +81,13 @@
   <content_rating type="oars-1.1" />
 
   <releases>
+    <release version="1.6.0" date="2026-10-13">
+      <description>
+        <p>First Peeksmith release, continuing the original recorder with an
+        independent application identity, native packages, restored MP4 support,
+        and fixes for recording, rendering, cancellation, and desktop integration.</p>
+      </description>
+    </release>
     <release version="1.5.1" date="2020-02-19" />
     <release version="1.5.0" date="2020-02-18" />
     <release version="1.4.0" date="2019-09-24" />

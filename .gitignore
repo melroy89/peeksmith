@@ -24,3 +24,16 @@ parts/
 prime/
 stage/
 *.snap
+
+# Release output
+/dist/
+/debian/.debhelper/
+/debian/peeksmith/
+/debian/peeksmith-dbgsym/
+/debian/debhelper-build-stamp
+/debian/files
+/debian/*.substvars
+*.deb
+*.ddeb
+*.buildinfo
+*.changes
