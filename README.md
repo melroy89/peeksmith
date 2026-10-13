@@ -84,8 +84,8 @@ preferences are not automatically migrated.
 
 ## Installation
 ### Release packages
-The first Peeksmith release, 1.6.0, is being prepared. Download assets will appear
-on the [releases page](https://github.com/melroy89/peeksmith/releases) after publication.
+Download the latest Peeksmith release from the
+[releases page](https://github.com/melroy89/peeksmith/releases/latest).
 
 Native x86-64 packages target Ubuntu 22.04, 24.04 and 26.04, Debian 12 and 13,
 and Fedora 44. Choose the asset matching your installed distribution version:
