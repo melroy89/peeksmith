@@ -1,12 +1,11 @@
 # Peek - an animated GIF recorder
-[![GitHub release](https://img.shields.io/github/release/phw/peek.svg)](https://github.com/phw/peek/releases)
+[![Upstream GitHub release](https://img.shields.io/github/release/phw/peek.svg)](https://github.com/phw/peek/releases)
 [![License: GPL v3+](https://img.shields.io/badge/license-GPL%20v3%2B-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Packaging status](https://repology.org/badge/tiny-repos/peek.svg)](https://repology.org/metapackage/peek/packages)
+[![Packaging status](https://repology.org/badge/tiny-repos/peek.svg)](https://repology.org/project/peek/packages)
 [![Translation Status](https://hosted.weblate.org/widgets/peek/-/svg-badge.svg)](https://hosted.weblate.org/engage/peek/?utm_source=widget)
 
-> [!IMPORTANT]
-> The Peek project has been declared deprecated, please read [the announcement](https://github.com/phw/peek/issues/1191).
-> No new features will be developed and issue reporting has been closed.
+This repository is a continuation of [the original Peek project](https://github.com/phw/peek).
+Report issues and contribute changes at [melroy89/peeksmith](https://github.com/melroy89/peeksmith).
 
 ![Peek recording itself](https://raw.githubusercontent.com/phw/peek/master/data/screenshots/peek-recording-itself.gif)
 
@@ -57,23 +56,26 @@ for the specific use case of recording screen areas, e.g. for easily showing UI
 features of your own apps or for showing a bug in bug reports. With Peek, you
 simply place the Peek window over the area you want to record and press
 "Record". Peek is optimized for generating animated GIFs, but you can also
-directly record to WebM if you prefer.
+directly record to WebM or MP4 if you prefer.
 
 Peek is not a general purpose screencast app with extended features but
 rather focuses on the single task of creating small, silent screencasts of
-an area of the screen for creating GIF animations or silent WebM videos.
+an area of the screen for creating GIF animations or WebM and MP4 videos.
 
 Peek runs on X11 or inside a GNOME Shell Wayland session using XWayland.
-Support for more Wayland desktops might be added in the future (see FAQs below).
+On X11, Peek prefers FFmpeg; on Wayland, it prefers the GNOME Shell recorder.
+Use `peek --backend=ffmpeg` or `peek --backend=gnome-shell` to select a backend
+explicitly. Support for more Wayland desktops might be added in the future
+(see FAQs below).
 
 
 ## Requirements
 ### Runtime
 
-- GTK+ >= 3.20
-- GLib >= 2.38
+- GTK+ >= 3.22
+- GLib >= 2.52
 - [libkeybinder3](https://github.com/kupferlauncher/keybinder)
-- FFmpeg >= 3
+- FFmpeg >= 3 with libx264, libx264rgb, and libvpx-vp9 encoders
 - GStreamer 'Good' plugins (for recording on GNOME Shell)
 - [gifski](https://gif.ski/) (optional but recommended for improved GIF quality)
 
@@ -86,6 +88,9 @@ Support for more Wayland desktops might be added in the future (see FAQs below).
 
 
 ## Installation
+The packages and release downloads below refer to upstream Peek and may not
+include changes from this fork. To build this fork, follow [From source](#from-source).
+
 ### Official distribution packages
 Peek is available in official package repositories for the following
 distributions:
@@ -186,7 +191,8 @@ Peek is available in the default repositories (Fedora 29 and later):
 To install the required `ffmpeg` package you can use the RPM Fusion free
 repository, see the
 [setup instructions for RPM Fusion](https://rpmfusion.org/Configuration).
-Once the repository is enabled install FFmpeg with:
+Fedora's `ffmpeg-free` does not include the x264 encoders used for GIF/APNG
+intermediates and MP4 recording. Once RPM Fusion is enabled, install FFmpeg with:
 
     sudo dnf install ffmpeg
 
@@ -210,14 +216,14 @@ version is available [here](https://aur.archlinux.org/packages/peek-git)
 
 
 ### Other distributions
-See the [Repology package list](https://repology.org/metapackage/peek/packages)
+See the [Repology package list](https://repology.org/project/peek/packages)
 for a list of Peek packages for various distributions.
 
 ### From source
 You can build and install Peek using Meson with Ninja:
 
-    git clone https://github.com/phw/peek.git
-    cd peek
+    git clone https://github.com/melroy89/peeksmith.git
+    cd peeksmith
     meson --prefix=/usr/local builddir
     cd builddir
     ninja
@@ -275,20 +281,23 @@ cases for Peek are recording small user interactions for showing UI features
 of an app you developed, for making short tutorials or for reporting bugs.
 
 ### What about WebM or MP4? Those are well supported on the web.
-Peek allows you to record in WebM format, just choose your preferred output
+Peek allows you to record in WebM or MP4 format; choose your preferred output
 format in the preferences. WebM is well supported by modern browsers, even
 though they are still not as universally supported by tools and online services
 as GIFs.
 
-> [!NOTE]
-> Support for MP4 was available till version 1.5.1 but was removed
-> from later versions.
+MP4 recording is available again in this fork. For GNOME Shell recording,
+MP4 encoding requires the GStreamer ugly plugins.
 
 ### What is the cause for "Could not start GNOME Shell recorder" errors?
 
 This usually indicates an error while starting the built-in GNOME shell
 recorder. Unfortunately Peek does not receive any error details, to find out
 more about this issues look at the GNOME Shell log output in `journalctl`.
+
+On recent GNOME Shell versions, a failed or unavailable PipeWire stream can
+also prevent recording. Check that PipeWire is running and inspect the GNOME
+Shell logs. On X11, try `peek --backend=ffmpeg`.
 
 A common cause for this is that the GNOME Shell recorder is already running,
 either because it was started via the GNOME Shell keyboard shortcut or by
@@ -310,7 +319,7 @@ record or make sure all windows are floating and uncheck "Always on top" from
 the Peek settings. If you want to be able to control the area when recording
 in i3 you can move Peek to the Scratchpad it will keep recording the area once
 you hide the window. If this does not work for you on any other window manager
-please open an [issue on GitHub](https://github.com/phw/peek/issues).
+please open an [issue on GitHub](https://github.com/melroy89/peeksmith/issues).
 
 ### My recorded GIFs flicker, what is wrong?
 Some users have experienced recorded windows flicker or other strange visual
@@ -359,26 +368,29 @@ screencasting interface is provided.
 
 ## Contribute
 If you want to help make Peek better the easiest thing you can do is to
-[report issues and feature requests](https://github.com/phw/peek/issues).
+[report issues and feature requests](https://github.com/melroy89/peeksmith/issues).
 Or you can help in development and translation.
 
 ### Development
 You are welcome to contribute code and provide pull requests for Peek. The
 easiest way to start is looking at the open issues tagged with
-[good first issue](https://github.com/phw/peek/labels/good%20first%20issue).
+[good first issue](https://github.com/melroy89/peeksmith/labels/good%20first%20issue).
 Those are open issues which are not too difficult to solve and can be started
 without too much knowledge about the code.
 
-Another good starting point are issues tagged with
-[help wanted](https://github.com/phw/peek/labels/help%20wanted). Those issues are
-probably harder to solve, but for some reason I cannot work on it for now and
-would love to see somebody jump in.
+Another good starting point is issues tagged with
+[help wanted](https://github.com/melroy89/peeksmith/labels/help%20wanted). These issues
+may require more familiarity with the code.
 
 In any case, just leave a note on the issue itself that you are working on it,
 to avoid multiple people working on the same issue.
 
 
 ### Translations
+The Weblate links below belong to the upstream translation project. Translation
+changes for this fork can also be submitted as pull requests to
+[melroy89/peeksmith](https://github.com/melroy89/peeksmith/pulls).
+
 You can help translate Peek into your language. Peek is using
 [Weblate](https://weblate.org/) for translation management.
 
@@ -393,6 +405,8 @@ for your language. The translator credits are shown in Peek's About dialog.
 
 ## License
 Peek Copyright © 2015-2024 by Philipp Wolfer <ph.wolfer@gmail.com>
+
+Copyright © 2026 by Melroy van den Berg <melroy@melroy.org>
 
 Peek is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

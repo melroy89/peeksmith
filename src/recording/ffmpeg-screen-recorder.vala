@@ -23,18 +23,15 @@ namespace Peek.Recording {
 
         var args = new Array<string> ();
         args.append_val ("ffmpeg");
-        // args.append_val ("-loglevel");
-        // args.append_val ("debug");
 
-        if (config.capture_sound) {
-          if (config.output_format == OutputFormat.WEBM){
-            args.append_val ("-f");
-            args.append_val ("pulse");
-            args.append_val ("-i");
-            args.append_val ("default");
-            args.append_val ("-acodec");
-            args.append_val ("vorbis");
-          }
+        // Audio codec is left to the container default (Opus / AAC).
+        if (config.capture_sound
+          && (config.output_format == OutputFormat.MP4
+            || config.output_format == OutputFormat.WEBM)) {
+          args.append_val ("-f");
+          args.append_val ("pulse");
+          args.append_val ("-i");
+          args.append_val ("default");
         }
 
         args.append_val ("-f");
@@ -56,6 +53,9 @@ namespace Peek.Recording {
 
         args.append_val ("-filter:v");
         var filter = "scale=iw/" + config.downsample.to_string () + ":-1";
+        if (config.output_format == OutputFormat.MP4) {
+          filter += ", crop=iw-mod(iw\\,2):ih-mod(ih\\,2)";
+        }
 
         args.append_val (filter);
 
@@ -83,8 +83,9 @@ namespace Peek.Recording {
           input.write (command);
           input.flush ();
         } catch (Error e) {
+          // Kill the child; its exit callback reports the failure.
           stderr.printf ("Error: %s\n", e.message);
-          recording_aborted (new RecordingError.RECORDING_ABORTED (e.message));
+          subprocess.force_exit ();
         }
       }
     }

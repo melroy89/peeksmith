@@ -21,7 +21,7 @@ namespace Peek.PostProcessing {
       this.config = config;
     }
 
-    public override async Array<File>? process_async (Array<File> files) throws RecordingError {
+    public override async Array<File> process_async (Array<File> files) throws RecordingError {
       try {
         var extension = Utils.get_file_extension_for_format (OutputFormat.GIF);
         var output_file = Utils.create_temp_file (extension);
@@ -38,6 +38,13 @@ namespace Peek.PostProcessing {
 
         argv.append_val ("--quality");
         argv.append_val (config.gifski_quality.to_string ());
+
+        // gifski limits output to ~800px wide unless told the frame size.
+        int width, height;
+        if (Gdk.Pixbuf.get_file_info (files.index (0).get_path (), out width, out height) != null) {
+          argv.append_val ("--width");
+          argv.append_val (width.to_string ());
+        }
 
         argv.append_val ("-o");
         argv.append_val (output_file);

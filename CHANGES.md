@@ -1,8 +1,17 @@
 # Version 1.6.0 - unreleased
+- Integrated runtime fixes and regression tests from xl0/peek-ng through
+  commit 57059e0 (https://github.com/xl0/peek-ng), including:
+  - Restore MP4 recording with baseline H.264 and even output dimensions
+  - Drain subprocess output to prevent recording and rendering hangs
+  - Preserve short recordings and recover cleanly from failure or cancellation
+  - Prefer FFmpeg on X11 and improve GNOME Shell startup and temporary files
+  - Preserve GIF frame width, use lossless intermediates, and fix frame discovery
+  - Fix shortcut feedback, countdown repainting, window sizing and positioning,
+    save retries, dialog keep-above restoration, and composited window shapes
+- Raise runtime requirements to GTK 3.22 and GLib 2.52
 - feat: Add support for GNOME 40+ (#910)
 - feat: Add sound capture settings
 - feat: Removed issue submission from error dialog
-- feat: Removed MP4 recording option due to maintenance and performance issues
 - fix: Fix desktop integration for GNOME Flashback (#1202)
 - fix: Fix format selection popover updating on format change
 - i18n: New translations for Hungarian, Malayalam, Portuguese and Slovak

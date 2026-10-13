@@ -25,10 +25,13 @@ namespace Peek.Recording {
 
     public GnomeShellDbusRecorder () throws IOError {
       base ();
+      // The interface has no properties; loading them would block startup
+      // for the full DBus timeout if the service is wedged.
       screencast = Bus.get_proxy_sync (
         BusType.SESSION,
         DBUS_NAME,
-        "/org/gnome/Shell/Screencast");
+        "/org/gnome/Shell/Screencast",
+        DBusProxyFlags.DO_NOT_LOAD_PROPERTIES);
     }
 
     ~GnomeShellDbusRecorder () {
@@ -55,6 +58,10 @@ namespace Peek.Recording {
 
         int width = area.width;
         int height = area.height;
+        if (config.output_format == OutputFormat.MP4) {
+          width = Utils.make_even (width);
+          height = Utils.make_even (height);
+        }
 
         screencast.screencast_area (
           area.left, area.top, width, height,
@@ -62,10 +69,19 @@ namespace Peek.Recording {
 
         if (success) {
           stdout.printf ("Recording to file %s\n", temp_file);
+          // GNOME >= 40 replaces the template's extension, leaving the
+          // pre-created temp file behind.
+          if (temp_file != file_template) {
+            FileUtils.remove (file_template);
+          }
         } else {
           var message = new StringBuilder ();
           message.append("Could not start GNOME Shell recorder.\n\n");
-          message.append("Missing codec or another active screen recording using org.gnome.Shell.Screencast?");
+          if (config.output_format == OutputFormat.MP4) {
+            message.append("Make sure you have the GStreamer ugly plugins installed for MP4 recording.");
+          } else {
+            message.append("Missing codec or another active screen recording using org.gnome.Shell.Screencast?");
+          }
 
           message.append("\n\nPlease see the FAQ at https://github.com/phw/peek#what-is-the-cause-for-could-not-start-gnome-shell-recorder-errors");
           throw new RecordingError.INITIALIZING_RECORDING_FAILED (message.str);
@@ -78,7 +94,6 @@ namespace Peek.Recording {
         throw new RecordingError.INITIALIZING_RECORDING_FAILED (e.message);
       }
 
-      is_recording = success;
     }
 
     public static bool is_available () throws PeekError {
@@ -110,10 +125,6 @@ namespace Peek.Recording {
     }
 
     private static bool is_gnome_40_or_higher () throws RecordingError {
-      if (!DesktopIntegration.is_gnome ()) {
-        return false;
-      }
-
       try {
         Gnome.Shell gnomeShell = Bus.get_proxy_sync (
           BusType.SESSION,
@@ -129,27 +140,21 @@ namespace Peek.Recording {
     protected override void stop_recording () {
       try {
         screencast.stop_screencast ();
-        if (!is_cancelling) {
+        if (state == State.STOPPING) {
           // Add a small timeout after GNOME Shell recorder was stopped.
           // The recorder will stop the GST pipeline, but there might be still
           // some cleanup / finalization to do. Without this the post-processing
           // sometimes fails.
           wait_timeout = Timeout.add_full (GLib.Priority.LOW, 400, () => {
-            Source.remove (wait_timeout);
             wait_timeout = 0;
             finalize_recording ();
-            return true;
+            return Source.REMOVE;
           });
         }
-      } catch (DBusError e) {
+      } catch (Error e) {
         stderr.printf ("Error: %s\n", e.message);
-        if (!is_cancelling) {
-          recording_aborted (new RecordingError.RECORDING_ABORTED (e.message));
-        }
-      } catch (IOError e) {
-        stderr.printf ("Error: %s\n", e.message);
-        if (!is_cancelling) {
-          recording_aborted (new RecordingError.RECORDING_ABORTED (e.message));
+        if (state == State.STOPPING) {
+          recording_failed (new RecordingError.RECORDING_ABORTED (e.message));
         }
       }
     }
@@ -172,6 +177,12 @@ namespace Peek.Recording {
       if (config.downsample > 1) {
         int width = area.width / config.downsample;
         int height = area.height / config.downsample;
+
+        if (config.output_format == OutputFormat.MP4) {
+          width = Utils.make_even (width);
+          height = Utils.make_even (height);
+        }
+
         pipeline.append_printf (
           "videoscale ! video/x-raw,width=%i,height=%i ! ", width, height);
       }
@@ -182,6 +193,13 @@ namespace Peek.Recording {
           pipeline.append ("queue ! mux. pulsesrc ! queue ! audioconvert ! vorbisenc ! ");
         }
         pipeline.append ("queue ! mux. webmmux name=mux");
+      } else if (config.output_format == OutputFormat.MP4) {
+        pipeline.append ("x264enc speed-preset=fast threads=%T ! ");
+        pipeline.append ("video/x-h264, profile=baseline !");
+        if (config.capture_sound) {
+          pipeline.append ("queue ! mux. pulsesrc ! queue ! audioconvert ! lamemp3enc ! ");
+        }
+        pipeline.append ("queue ! mux. mp4mux name=mux");
       } else {
         // We could use lossless x264 here, but x264enc is part of
         // gstreamer1.0-plugins-ugly and not always available.

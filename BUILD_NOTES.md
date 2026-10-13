@@ -1,7 +1,9 @@
 # Peek build and packaging notes
 This file contains information about building and packaging Peek. The
 information here is mainly for developers and packagers, end users should
-refer to the installation instructions in README.md.
+refer to the [installation instructions in README.md](README.md#installation).
+For the source checkout instructions for this fork, see
+[building from source](README.md#from-source).
 
 ## Building
 
@@ -18,6 +20,26 @@ From inside the Peek source folder run:
 ### Run tests
 
     ninja test
+
+The GitHub Actions workflow in `.github/workflows/ci.yml` builds the default
+configuration and an alternate configuration covering the optional feature
+switches. A separate job runs all registered unit tests and validates desktop,
+AppStream (offline), and GSettings metadata under Xvfb and a D-Bus session.
+Build jobs also check a staged installation; CI does not exercise real screen
+capture or publish packages.
+
+For an isolated X11 recording smoke test, install FFmpeg, Openbox, xdotool,
+Xvfb, xauth, and D-Bus, then run from the source root:
+
+    xvfb-run -a -s "-screen 0 1280x800x24" dbus-run-session -- \
+      bash -c 'openbox & sleep 1; tests/ui-smoke.sh builddir/src/peek'
+
+This drives recording, saving, cancellation, and recovery after recorder
+failure. Set `PEEK_FORMAT=mp4` (or `apng` / `webm`) to exercise other formats.
+Run it on a disposable display: it grabs a global shortcut and records
+the screen. GNOME Shell coverage requires a real GNOME session and can use
+`PEEK_BACKEND=gnome-shell tests/ui-smoke.sh builddir/src/peek`.
+
 
 ### Running Peek with debug output
 
@@ -36,7 +58,7 @@ From inside the Peek source folder run:
 #### Build requirements
  - meson (>= 0.47.0)
  - valac (>= 0.22)
- - libgtk-3-dev (>= 3.20)
+ - libgtk-3-dev (>= 3.22)
  - libkeybinder-3.0-dev
  - libxml2-utils
  - gettext (>= 0.19 for localized .desktop entry)
@@ -44,10 +66,10 @@ From inside the Peek source folder run:
  - gzip (optional for building man page)
 
 #### Runtime requirements
- - libgtk-3-0 (>= 3.20)
- - libglib2.0 (>= 2.38)
+ - libgtk-3-0 (>= 3.22)
+ - libglib2.0-0 (>= 2.52)
  - libkeybinder-3.0-0
- - ffmpeg >= 3
+ - ffmpeg >= 3 with libx264, libx264rgb, and libvpx-vp9 encoders
 
 ### Flatpak
 

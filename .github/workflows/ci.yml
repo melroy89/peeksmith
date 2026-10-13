@@ -1,0 +1,92 @@
+name: Build and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (${{ matrix.configuration }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - configuration: default
+            options: -Denable-keybinder=enabled
+          - configuration: alternate
+            options: >-
+              -Denable-keybinder=disabled
+              -Denable-filechoosernative=true
+              -Denable-gnome-shell=false
+              -Denable-open-file-manager=false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            build-essential meson ninja-build pkg-config valac \
+            libgtk-3-dev libkeybinder-3.0-dev gettext libxml2-utils txt2man
+      - name: Configure
+        env:
+          BUILD_OPTIONS: ${{ matrix.options }}
+        run: meson setup build --prefix=/usr --buildtype=release -Dbuild-tests=false $BUILD_OPTIONS
+      - name: Compile
+        run: meson compile -C build
+      - name: Stage installation
+        run: |
+          DESTDIR="$PWD/staging" meson install -C build
+          test -x staging/usr/bin/peek
+          test -f staging/usr/share/applications/com.uploadedlobster.peek.desktop
+          test -f staging/usr/share/glib-2.0/schemas/com.uploadedlobster.peek.gschema.xml
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: build-logs-${{ matrix.configuration }}
+          path: build/meson-logs/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  test:
+    name: Unit tests and metadata validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            build-essential meson ninja-build pkg-config valac \
+            libgtk-3-dev libkeybinder-3.0-dev gettext libxml2-utils txt2man \
+            desktop-file-utils appstream-util dbus-x11 xvfb xauth
+      - name: Configure
+        run: meson setup build --prefix=/usr -Dbuild-tests=true -Denable-keybinder=enabled
+      - name: Compile
+        run: meson compile -C build
+      - name: Run tests
+        run: dbus-run-session -- xvfb-run -a meson test -C build --print-errorlogs
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-logs
+          path: build/meson-logs/
+          retention-days: 7
+          if-no-files-found: ignore

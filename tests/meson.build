@@ -22,6 +22,14 @@ if get_option('build-tests')
   test('Testing utils', test_utils)
 
   # /screen-recorder/recording-area/
+  test_recording_area = executable('test-recording-area',
+    'screen-recorder/test-recording-area.vala',
+    join_paths(meson.source_root(), 'src/recording/recording-area.vala'),
+    dependencies: [dependency('gtk+-3.0')],
+  )
+  test('Testing recording-area', test_recording_area)
+
+  # /screen-recorder/cli-screen-recorder/
   test_utils = executable('test-cli-screen-recorder',
     'screen-recorder/test-cli-screen-recorder.vala',
     join_paths(meson.source_root(), 'src/post-processing/cli-post-processor.vala'),
@@ -35,6 +43,8 @@ if get_option('build-tests')
     join_paths(meson.source_root(), 'src/recording/screen-recorder.vala'),
     join_paths(meson.source_root(), 'src/recording/base-screen-recorder.vala'),
     join_paths(meson.source_root(), 'src/recording/cli-screen-recorder.vala'),
+    join_paths(meson.source_root(), 'src/recording/ffmpeg-screen-recorder.vala'),
+    join_paths(meson.source_root(), 'src/recording/ffmpeg.vala'),
     join_paths(meson.source_root(), 'src/defaults.vala'),
     join_paths(meson.source_root(), 'src/errordomain.vala'),
     join_paths(meson.source_root(), 'src/utils.vala'),

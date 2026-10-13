@@ -15,11 +15,10 @@ namespace Peek {
   const int DEFAULT_DOWNSAMPLE = 1;
   const int DEFAULT_GIFSKI_QUALITY = 60;
 
-  const string ISSUE_TRACKER_URL = "https://github.com/phw/peek/issues/new";
-
   public enum OutputFormat {
     APNG,
     GIF,
+    MP4,
     WEBM;
 
     public string to_string() {
@@ -30,6 +29,8 @@ namespace Peek {
           return "gif";
         case WEBM:
           return "webm";
+        case MP4:
+          return "mp4";
         default:
           assert_not_reached ();
       }

@@ -20,15 +20,20 @@ namespace Peek.Recording {
         string[] my_args = argv[0:argv.length];
         subprocess = new Subprocess.newv (argv, SubprocessFlags.STDIN_PIPE | SubprocessFlags.STDOUT_PIPE | SubprocessFlags.STDERR_MERGE);
         input = subprocess.get_stdin_pipe ();
-        subprocess.wait_check_async.begin (null, (obj, res) => {
+        var process = subprocess;
+        var recording_file = temp_file;
+        Utils.wait_with_output_async.begin (process, (obj, res) => {
           bool success = false;
           int status = 0;
           int term_sig = 0;
+          string? output = null;
           try {
-            success = subprocess.wait_check_async.end (res);
-            status = subprocess.get_exit_status ();
-            if (subprocess.get_if_signaled ()) {
-              term_sig = subprocess.get_term_sig ();
+            output = Utils.wait_with_output_async.end (res);
+            success = process.get_successful ();
+            if (process.get_if_exited ()) {
+              status = process.get_exit_status ();
+            } else if (process.get_if_signaled ()) {
+              term_sig = process.get_term_sig ();
             }
 
             debug ("recording process exited, term_sig: %d, exit_status: %d, success: %s",
@@ -37,7 +42,15 @@ namespace Peek.Recording {
             stderr.printf ("Error: %s\n", e.message);
             status = -1;
             success = false;
+            output = e.message;
           }
+
+          // A cancelled recording may have been replaced while it was exiting.
+          if (subprocess != process) {
+            return;
+          }
+          subprocess = null;
+          input = null;
 
           if (temp_file != null) {
             var file = File.new_for_path (temp_file);
@@ -50,26 +63,23 @@ namespace Peek.Recording {
             }
           }
 
-          // If the recorder was cancelled no further action is required
-          if (is_cancelling) {
+          // Cancelled: the file was removed already, but a cancel during
+          // start-up can race the recorder creating it. Exited while still
+          // recording, or stopped with an error: report it. Stopped cleanly:
+          // process the file.
+          if (state == State.IDLE) {
+            if (recording_file != null) {
+              FileUtils.remove (recording_file);
+            }
             return;
           }
-
-          if (!success) {
-            string message = Utils.get_command_failed_message (my_args, subprocess);
-            var reason = new RecordingError.RECORDING_ABORTED (message);
-            recording_aborted (reason);
+          if (!success || state == State.RECORDING) {
+            string message = Utils.get_command_failed_message (my_args, process, output);
+            recording_failed (new RecordingError.RECORDING_ABORTED (message));
           } else {
             finalize_recording ();
           }
-
-          subprocess = null;
-          input = null;
         });
-
-
-        is_recording = true;
-        recording_started ();
       } catch (Error e) {
         throw new RecordingError.INITIALIZING_RECORDING_FAILED (e.message);
       }
@@ -79,10 +89,6 @@ namespace Peek.Recording {
       if (subprocess != null) {
         subprocess.force_exit ();
       }
-    }
-
-    protected virtual bool is_exit_status_success (int status) {
-      return Utils.is_exit_status_success (status);
     }
   }
 

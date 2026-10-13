@@ -19,9 +19,9 @@ namespace Peek.Ui {
     public static Gtk.Window present_single_instance (Gtk.Window main_window) {
       if (instance == null) {
         instance = new PreferencesDialog ();
-        instance.delete_event.connect ((event) => {
+        instance.delete_event.connect ((dialog, event) => {
           instance = null;
-          main_window.set_keep_above (true);
+          ((Gtk.Window) dialog).transient_for.set_keep_above (true);
           return false;
         });
       }
@@ -169,7 +169,7 @@ namespace Peek.Ui {
     [GtkCallback]
     private void on_output_format_changed () {
       recording_gifski_settings.sensitive = is_format (OutputFormat.GIF);
-      recording_capture_sound.sensitive = is_format (OutputFormat.WEBM);
+      recording_capture_sound.sensitive = is_format (OutputFormat.MP4) || is_format (OutputFormat.WEBM);
     }
 
     [GtkCallback]

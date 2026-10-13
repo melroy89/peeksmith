@@ -29,26 +29,15 @@ namespace Peek {
         return settings;
       }
 
-#if DEBUG
-      try {
-        var settings_dir = "./data/";
-        var schema_source = new SettingsSchemaSource.from_directory (settings_dir, null, false);
-        SettingsSchema? schema = schema_source.lookup (APP_ID, false);
-        if (schema != null) {
-          settings = new Settings.full (schema, null, null);
-        }
-      }
-      catch (Error e) {
-        debug ("Loading local settings failed: %s", e.message);
-      }
-#endif
-
       if (settings == null) {
         settings = new Settings (APP_ID);
       }
 
       return settings;
     }
+
+    // True while a global toggle-recording hotkey is actually grabbed.
+    public static bool keybinding_bound { get; private set; default = false; }
 
 #if HAS_KEYBINDER
     public static bool keybindings_paused { get; set; default = false; }
@@ -226,8 +215,12 @@ namespace Peek {
             Keybinder.unbind_all (_keybinding_toggle_recording);
           }
 
+          keybinding_bound = false;
           if (value != "") {
-            Keybinder.bind_full (value, handle_keybinding_toggle_recording);
+            keybinding_bound = Keybinder.bind_full (value, handle_keybinding_toggle_recording);
+            if (!keybinding_bound) {
+              warning ("Could not grab global shortcut %s, it may be taken by another application", value);
+            }
           }
 
           _keybinding_toggle_recording = value;
@@ -296,12 +289,8 @@ namespace Peek {
       load_stylesheet_by_name ("peek");
       string theme = DesktopIntegration.get_theme_name ();
       debug ("GTK theme: %s", theme);
-      if (theme == "Ambiance" || theme == "Breeze" || theme == "Breeze-Dark") {
+      if (theme == "Breeze" || theme == "Breeze-Dark") {
         load_stylesheet_by_name (theme.down ());
-      }
-
-      if (DesktopIntegration.is_unity ()) {
-        load_stylesheet_by_name ("unity");
       }
     }
 

@@ -57,6 +57,9 @@ namespace Peek.Ui {
     private unowned RadioButton webm_button;
 
     [GtkChild]
+    private unowned RadioButton mp4_button;
+
+    [GtkChild]
     private unowned MenuButton pop_format_menu;
 
     [GtkChild]
@@ -208,6 +211,15 @@ namespace Peek.Ui {
 
       stop_button_label = stop_button.label;
 
+      // Let the button labels shrink so the header bar does not dictate a
+      // large minimum window width; below SMALL_WINDOW_SIZE they are hidden.
+      foreach (var button in new Button[] { record_button, stop_button }) {
+        var label = GtkHelper.find_first_child_of_type (button, typeof (Label)) as Label;
+        if (label != null) {
+          label.ellipsize = Pango.EllipsizeMode.END;
+        }
+      }
+
       // Make sure the close button is on the left if desktop environment
       // is configured that way.
       this.set_close_button_position ();
@@ -286,6 +298,7 @@ namespace Peek.Ui {
       switch (format) {
         case OutputFormat.APNG: return _ ("APNG");
         case OutputFormat.GIF: return _ ("GIF");
+        case OutputFormat.MP4: return _ ("MP4");
         case OutputFormat.WEBM: return _ ("WebM");
         default: return "";
       }
@@ -308,6 +321,9 @@ namespace Peek.Ui {
           break;
         case OutputFormat.WEBM:
           webm_button.set_active (true);
+          break;
+        case OutputFormat.MP4:
+          mp4_button.set_active (true);
           break;
       }
 
@@ -401,15 +417,19 @@ namespace Peek.Ui {
         update_ui_size (area);
 
         if (!is_recording) {
-          // Shortcut recording hint
-          var shortcut = Application.get_app_settings ();
-          string keys = shortcut.get_string ("keybinding-toggle-recording");
-          uint accelerator_key;
-          Gdk.ModifierType accelerator_mods;
-          Gtk.accelerator_parse (keys, out accelerator_key, out accelerator_mods);
-          var shortcut_hint = Gtk.accelerator_get_label (accelerator_key, accelerator_mods);
-          shortcut_label.set_text (_ ("Start / Stop: %s").printf (shortcut_hint));
-          shortcut_label.show ();
+          // Shortcut recording hint, only when the hotkey is really grabbed
+          if (Application.keybinding_bound) {
+            var shortcut = Application.get_app_settings ();
+            string keys = shortcut.get_string ("keybinding-toggle-recording");
+            uint accelerator_key;
+            Gdk.ModifierType accelerator_mods;
+            Gtk.accelerator_parse (keys, out accelerator_key, out accelerator_mods);
+            var shortcut_hint = Gtk.accelerator_get_label (accelerator_key, accelerator_mods);
+            shortcut_label.set_text (_ ("Start / Stop: %s").printf (shortcut_hint));
+            shortcut_label.show ();
+          } else {
+            shortcut_label.hide ();
+          }
 
           var size_label = new StringBuilder ();
           size_label.printf ("%i x %i", area.width, area.height);
@@ -460,6 +480,8 @@ namespace Peek.Ui {
         select_format (OutputFormat.APNG);
       } else if (webm_button.get_active ()) {
         select_format (OutputFormat.WEBM);
+      } else if (mp4_button.get_active ()) {
+        select_format (OutputFormat.MP4);
       }
     }
 
@@ -581,10 +603,10 @@ namespace Peek.Ui {
     }
 
     private void start_recording () {
-      // Actually start the recording on next idle time, making sure
-      // all queued painting happens before this.
-      start_recording_event_source = Idle.add_full (Priority.HIGH_IDLE, () => {
-        Source.remove (start_recording_event_source);
+      // Start the recording only after the pending repaint: GDK draws at
+      // priority 120, so anything higher (lower number) would still capture
+      // the countdown digit.
+      start_recording_event_source = Idle.add_full (Priority.DEFAULT_IDLE, () => {
         start_recording_event_source = 0;
         update_time ();
         var area = get_recording_area ();
@@ -594,7 +616,6 @@ namespace Peek.Ui {
 
         try {
           recorder.record (area);
-          return true;
         } catch (RecordingError e) {
           stderr.printf ("Failed to initialize recorder: %s\n", e.message);
           leave_recording_state ();
@@ -602,8 +623,8 @@ namespace Peek.Ui {
             this,
             _ ("Recording could not be started due to an unexpected error."),
             e);
-          return false;
         }
+        return Source.REMOVE;
       });
     }
 
@@ -678,13 +699,13 @@ namespace Peek.Ui {
 
       this.input_shape_combine_region (window_region);
 
-      if (!this.get_screen ().is_composited ()) {
-        if (delay_indicator_timeout == 0 &&
-          size_indicator_timeout == 0) {
-          this.shape_combine_region (window_region);
-        } else {
-          this.shape_combine_region (null);
-        }
+      // Also set the bounding shape when composited: some window managers
+      // (awesome) copy only the bounding shape to their frame window.
+      if (delay_indicator_timeout == 0 &&
+        size_indicator_timeout == 0) {
+        this.shape_combine_region (window_region);
+      } else {
+        this.shape_combine_region (null);
       }
     }
 
@@ -789,15 +810,16 @@ namespace Peek.Ui {
               stderr.printf ("%s\n", message);
               throw new IOError.FAILED (message);
             }
+            leave_recording_state ();
           } catch (Error e) {
+            // Keep the rendered file and let the user pick another location.
             stderr.printf ("File save error: %s\n", e.message);
             ErrorDialog.present_single_instance (
               this,
               _ ("The file could not be saved to the selected location."),
               e);
-          }
-          finally {
-            leave_recording_state ();
+            this.out_file = null;
+            show_file_chooser ();
           }
         });
     }
@@ -827,22 +849,18 @@ namespace Peek.Ui {
 #if ! DISABLE_OPEN_FILE_MANAGER
       var parameter = new Variant.string (file.get_uri ());
 
-      // Unity does not allow actions on notifications, so we disable
-      // notification actions there.
-      if (!DesktopIntegration.is_unity ()) {
-        notification.set_body (_ ("Click here to show the saved file in your file manager."));
-        notification.add_button_with_target_value (
-          _ ("Show in file manager"),
+      notification.set_body (_ ("Click here to show the saved file in your file manager."));
+      notification.add_button_with_target_value (
+        _ ("Show in file manager"),
+        "app.show-file",
+        parameter);
+
+      // Plasma and XFCE will show an empty button for the default action
+      if (!DesktopIntegration.is_plasma () &&
+        !DesktopIntegration.is_xfce ()) {
+        notification.set_default_action_and_target_value (
           "app.show-file",
           parameter);
-
-        // Plasma and XFCE will show an empty button for the default action
-        if (!DesktopIntegration.is_plasma () &&
-          !DesktopIntegration.is_xfce ()) {
-          notification.set_default_action_and_target_value (
-            "app.show-file",
-            parameter);
-        }
       }
 #endif
 
@@ -905,8 +923,15 @@ namespace Peek.Ui {
       if (w == 0 || h == 0)
         return;
 
-      if (x >= 0 && y >= 0) {
-        move (x, y);
+      // Only restore a position that is still on a connected monitor.
+      var display = Gdk.Display.get_default ();
+      for (int i = 0; i < display.get_n_monitors (); i++) {
+        var area = display.get_monitor (i).get_workarea ();
+        if (x >= area.x && x < area.x + area.width
+          && y >= area.y && y < area.y + area.height) {
+          move (x, y);
+          break;
+        }
       }
 
       resize (w, h);

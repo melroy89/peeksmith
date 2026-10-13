@@ -30,7 +30,6 @@ peek_sources = [
   'ui/set-window-size-dialog.vala',
   'ui/error-dialog.vala',
   'ui/preferences-dialog.vala',
-  'ui/shortcut-label.vala',
   'vapi/config.vapi',
 ]
 
@@ -49,13 +48,13 @@ enable_gnome_shell = get_option('enable-gnome-shell')
 enable_open_file_manager = get_option('enable-open-file-manager')
 
 # Dependencies
-gtk = dependency('gtk+-3.0', version: '>= 3.20')
+gtk = dependency('gtk+-3.0', version: '>= 3.22')
 keybinder = dependency('keybinder-3.0', required: get_option('enable-keybinder'))
 
 peek_deps = [
   dependency('cairo'),
   dependency('gio-2.0', version: '>= 2.42'),
-  dependency('glib-2.0', version: '>= 2.38'),
+  dependency('glib-2.0', version: '>= 2.52'),
   dependency('gmodule-2.0'),
   gtk,
 ]
@@ -66,18 +65,9 @@ if keybinder.found()
 endif
 
 # Feature configuration
-if gtk.version().version_compare('>= 3.20')
-  message('Compiling with features for GTK >= 3.20')
-  if enable_filechoosernative
-    message('Compiling with Gtk.FileChooserNative')
-    vala_args += ['-D', 'HAS_GTK_FILECHOOSERNATIVE']
-  endif
-endif
-
-if gtk.version().version_compare('>= 3.22')
-  message('Compiling with features for GTK >= 3.22')
-  vala_args += ['-D', 'HAS_GTK_SHORTCUT_LABEL']
-  vala_args += ['-D', 'HAS_GTK_SHOW_URI_ON_WINDOW']
+if enable_filechoosernative
+  message('Compiling with Gtk.FileChooserNative')
+  vala_args += ['-D', 'HAS_GTK_FILECHOOSERNATIVE']
 endif
 
 if not enable_gnome_shell
