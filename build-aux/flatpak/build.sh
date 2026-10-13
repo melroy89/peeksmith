@@ -1,5 +1,5 @@
 #!/bin/bash
-LOCAL_REPO=${HOME}/flatpak-repos/peek
+LOCAL_REPO=${HOME}/flatpak-repos/peeksmith
 
 if [ -z "$1" ]; then
     BRANCH=master
@@ -16,15 +16,14 @@ cd $WORK_DIR
 
 build_for_arch () {
   ARCH=$1
-  echo -e "\e[0;36mBuilding Peek \e[1;36m${BRANCH}\e[0;36m for \e[1;36m${ARCH}\e[0m"
+  echo -e "\e[0;36mBuilding Peeksmith \e[1;36m${BRANCH}\e[0;36m for \e[1;36m${ARCH}\e[0m"
 
   flatpak-builder \
     --require-changes \
     --repo="${LOCAL_REPO}" \
-    --gpg-sign=B539AD7A5763EE9C1C2E4DE24C14923F47BF1A02 \
     --force-clean \
     --arch=${ARCH} \
-    com.uploadedlobster.peek_${ARCH} flatpak-${BRANCH}.yml
+    org.melroy.Peeksmith_${ARCH} flatpak-${BRANCH}.yml
 
   if [ $? -eq 0 ];then
     echo -e "\e[0;32mBuild \e[1;32m${ARCH}\e[0;32m success!\e[0m\n"

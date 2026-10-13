@@ -33,7 +33,7 @@ from gi.repository import AppStreamGlib
 from html2text import HTML2Text
 from subprocess import call
 
-APP_ID = 'com.uploadedlobster.peek'
+APP_ID = 'org.melroy.Peeksmith'
 APPSTREAM_TMP_FILE = '/tmp/%s.appdata.xml' % APP_ID
 
 DEFAULT_LOCALE = 'C'

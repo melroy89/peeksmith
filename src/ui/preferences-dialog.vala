@@ -11,7 +11,7 @@ using Gtk;
 
 namespace Peek.Ui {
 
-  [GtkTemplate (ui = "/com/uploadedlobster/peek/preferences.ui")]
+  [GtkTemplate (ui = "/org/melroy/Peeksmith/preferences.ui")]
   class PreferencesDialog : Window {
 
     private static Gtk.Window? instance;

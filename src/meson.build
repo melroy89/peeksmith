@@ -91,14 +91,14 @@ about_ui_file = configure_file(
 
 gnome = import('gnome')
 
-peek_sources += gnome.compile_resources('peek-resources',
-  '../ui/peek.gresource.xml',
+peek_sources += gnome.compile_resources('peeksmith-resources',
+  '../ui/peeksmith.gresource.xml',
   source_dir: '../ui/',
-  c_name: 'peek',
+  c_name: 'peeksmith',
   dependencies: [about_ui_file]
 )
 
-executable('peek', peek_sources,
+executable('peeksmith', peek_sources,
   vala_args: vala_args,
   dependencies: peek_deps,
   install: true,

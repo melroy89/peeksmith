@@ -14,7 +14,7 @@ int main (string[] args) {
   // If not explicitly set otherwise, set GDK_BACKEND to x11.
   // Native Wayland is not yet supported, that means on Wayland
   // the use of XWayland is mandatory. See also
-  // https://github.com/phw/peek#why-no-native-wayland-support
+  // https://github.com/melroy89/peeksmith#why-no-native-wayland-support
   Environment.set_variable ("GDK_BACKEND", "x11", false);
 
   // Writing the stop command to a recorder that already exited must

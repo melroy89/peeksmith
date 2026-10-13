@@ -10,6 +10,7 @@ cmake_install.cmake
 Makefile
 
 peek
+peeksmith
 src/*.c
 tests/*.c
 ui/*.c

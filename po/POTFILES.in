@@ -8,6 +8,6 @@ ui/application-window.ui
 ui/error-dialog.ui
 ui/preferences.ui
 ui/set-window-size-dialog.ui
-data/com.uploadedlobster.peek.desktop.in
-data/com.uploadedlobster.peek.appdata.xml.in
-data/com.uploadedlobster.peek.gschema.xml
+data/org.melroy.Peeksmith.desktop.in
+data/org.melroy.Peeksmith.appdata.xml.in
+data/org.melroy.Peeksmith.gschema.xml

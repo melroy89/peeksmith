@@ -19,4 +19,4 @@ export PATH=$BIN_DIR:$PATH
 # Workaround for theme incompatibility with bundled GTK version
 export GTK_THEME=Adwaita-dark
 
-$BASE_DIR/usr/lib/peek/peek-run "$@"
+$BASE_DIR/usr/lib/peeksmith/peeksmith-run "$@"

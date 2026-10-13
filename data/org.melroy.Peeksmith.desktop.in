@@ -1,10 +1,10 @@
 [Desktop Entry]
-Name=Peek
-Exec=peek
+Name=Peeksmith
+Exec=peeksmith
 GenericName=Animated GIF recorder
 Comment=Record short animated GIF images from your screen
-Keywords=screencast;screen recorder;screen capture;GIF;WebM;APNG;
-Icon=com.uploadedlobster.peek
+Keywords=screencast;screen recorder;screen capture;GIF;WebM;APNG;MP4;
+Icon=org.melroy.Peeksmith
 Type=Application
 Categories=GTK;GNOME;Graphics;2DGraphics;AudioVideo;Video;Recorder;
 StartupNotify=true

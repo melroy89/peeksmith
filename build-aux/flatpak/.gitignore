@@ -1,4 +1,4 @@
 # flatpak build directories
 .flatpak-builder/
-com.uploadedlobster.peek_*/
+org.melroy.Peeksmith_*/
 flatpak/

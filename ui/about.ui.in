@@ -32,11 +32,12 @@ Author: Philipp Wolfer <ph.wolfer@gmail.com>
     <property name="modal">True</property>
     <property name="window_position">center-on-parent</property>
     <property name="type_hint">normal</property>
-    <property name="program_name">Peek</property>
+    <property name="program_name">Peeksmith</property>
     <property name="version">@PEEK_VERSION_FULL@</property>
     <property name="comments" translatable="yes">Animated GIF recorder</property>
-    <property name="website">https://github.com/phw/peek</property>
-    <property name="authors">Philipp Wolfer</property>
+    <property name="website">https://github.com/melroy89/peeksmith</property>
+    <property name="authors">Melroy van den Berg
+Philipp Wolfer</property>
     <property name="translator_credits" translatable="yes" context="Translator credits in about dialog" comments="Please add your name to the list of translators if you want to be credited for the translations you have done.">translator-credits</property>
     <property name="artists">
 <![CDATA[Tobias Bernard
@@ -44,7 +45,7 @@ Jakub Steiner
 Sam Hewitt
 Lapo Calamandrei]]>
     </property>
-    <property name="logo_icon_name">com.uploadedlobster.peek</property>
+    <property name="logo_icon_name">org.melroy.Peeksmith</property>
     <property name="license_type">gpl-3-0</property>
     <signal name="response" handler="on_response" swapped="no"/>
     <child internal-child="vbox">

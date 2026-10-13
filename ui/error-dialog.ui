@@ -67,7 +67,7 @@
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Please read the &lt;a href="https://github.com/phw/peek#frequently-asked-questions"&gt;FAQs&lt;/a&gt; before reporting this issue. If the FAQs do not answer your issue please report it and provide as much details as possible on what you were doing when the issue occurred.</property>
+                <property name="label" translatable="yes">Please read the &lt;a href="https://github.com/melroy89/peeksmith#frequently-asked-questions"&gt;FAQs&lt;/a&gt; before reporting this issue. If the FAQs do not answer your issue please report it and provide as much details as possible on what you were doing when the issue occurred.</property>
                 <property name="use-markup">True</property>
                 <property name="wrap">True</property>
                 <property name="max-width-chars">70</property>

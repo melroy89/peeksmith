@@ -11,7 +11,7 @@ using Gtk;
 
 namespace Peek.Ui {
 
-  [GtkTemplate (ui = "/com/uploadedlobster/peek/error-dialog.ui")]
+  [GtkTemplate (ui = "/org/melroy/Peeksmith/error-dialog.ui")]
   class ErrorDialog : Gtk.Dialog {
 
     private static ErrorDialog? instance;

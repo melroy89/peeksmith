@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.melroy.Peeksmith
+Exec=@CMAKE_INSTALL_FULL_BINDIR@/peeksmith --gapplication-service

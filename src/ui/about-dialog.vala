@@ -9,7 +9,7 @@ This software is licensed under the GNU General Public License
 
 namespace Peek.Ui {
 
-  [GtkTemplate (ui = "/com/uploadedlobster/peek/about.ui")]
+  [GtkTemplate (ui = "/org/melroy/Peeksmith/about.ui")]
   class AboutDialog : Gtk.AboutDialog {
 
     private static Gtk.Dialog? instance;

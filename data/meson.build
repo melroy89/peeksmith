@@ -1,6 +1,6 @@
 desktop_file = i18n.merge_file(
-  input: 'com.uploadedlobster.peek.desktop.in',
-  output: 'com.uploadedlobster.peek.desktop',
+  input: 'org.melroy.Peeksmith.desktop.in',
+  output: 'org.melroy.Peeksmith.desktop',
   type: 'desktop',
   po_dir: '../po',
   install: true,
@@ -15,8 +15,8 @@ if desktop_utils.found()
 endif
 
 appstream_file = i18n.merge_file(
-  input: 'com.uploadedlobster.peek.appdata.xml.in',
-  output: 'com.uploadedlobster.peek.appdata.xml',
+  input: 'org.melroy.Peeksmith.appdata.xml.in',
+  output: 'org.melroy.Peeksmith.appdata.xml',
   po_dir: '../po',
   install: true,
   install_dir: join_paths(get_option('datadir'), 'metainfo')
@@ -30,7 +30,7 @@ if appstream_util.found()
   )
 endif
 
-install_data('com.uploadedlobster.peek.gschema.xml',
+install_data('org.melroy.Peeksmith.gschema.xml',
   install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
 )
 
@@ -47,8 +47,8 @@ configuration_data.set(
   'CMAKE_INSTALL_FULL_BINDIR',
   join_paths(get_option('prefix'), get_option('bindir')))
 configure_file(
-  input: 'com.uploadedlobster.peek.service.in',
-  output: 'com.uploadedlobster.peek.service',
+  input: 'org.melroy.Peeksmith.service.in',
+  output: 'org.melroy.Peeksmith.service',
   configuration: configuration_data,
   install_dir: join_paths(get_option('datadir'), 'dbus-1/services')
 )

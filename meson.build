@@ -1,4 +1,4 @@
-project('peek', ['c', 'vala'],
+project('peeksmith', ['c', 'vala'],
   version: '1.5.1',
   meson_version: '>= 0.47.0',
 )

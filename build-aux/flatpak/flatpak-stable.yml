@@ -1,11 +1,11 @@
-app-id: com.uploadedlobster.peek
+app-id: org.melroy.Peeksmith
 runtime: org.gnome.Platform
 runtime-version: '42'
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
 branch: stable
-command: peek
+command: peeksmith
 finish-args:
   - --share=ipc
   - --socket=x11
@@ -16,7 +16,7 @@ finish-args:
   - --talk-name=org.gnome.Shell.Screencast
   - --filesystem=home
   - --filesystem=xdg-videos
-  - --metadata=X-DConf=migrate-path=/com/uploadedlobster/peek/
+  - --metadata=X-DConf=migrate-path=/org/melroy/Peeksmith/
   - --env=LD_LIBRARY_PATH=/app/lib
 build-options:
   cflags: -O2 -g -fstack-protector-strong -D_FORTIFY_SOURCE=2
@@ -108,7 +108,7 @@ modules:
       - cargo build --release --features=openmp --verbose
       - install -Dm755 target/release/gifski /app/bin/gifski
 
-  - name: peek
+  - name: peeksmith
     buildsystem: meson
     config-opts:
       - --buildtype=release
@@ -117,7 +117,7 @@ modules:
     sources:
       - type: git
         url: ../..
-        branch: 1.5.1
+        branch: main
     modules:
       - name: keybinder3
         sources:

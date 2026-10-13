@@ -9,7 +9,7 @@ This software is licensed under the GNU General Public License
 
 namespace Peek {
 
-  const string APP_ID = "com.uploadedlobster.peek";
+  const string APP_ID = "org.melroy.Peeksmith";
 
   const int DEFAULT_FRAMERATE = 15;
   const int DEFAULT_DOWNSAMPLE = 1;

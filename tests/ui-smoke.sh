@@ -1,28 +1,28 @@
 #!/bin/bash
-# UI smoke test: drives the real peek binary on the current X display with
+# UI smoke test: drives the real peeksmith binary on the current X display with
 # xdotool and the ffmpeg backend, and checks the log, the output folder and
 # the cache folder after each scenario. Settings and cache are isolated in a
 # temp dir, but the global Ctrl+Alt+R hotkey is grabbed and the screen is
 # really recorded, so do not run it on a display you are using.
 #
-#   tests/ui-smoke.sh [path/to/peek]
-#   PEEK_BACKEND=gnome-shell tests/ui-smoke.sh   # in a GNOME session (tests/vm)
+#   tests/ui-smoke.sh [path/to/peeksmith]
+#   PEEKSMITH_BACKEND=gnome-shell tests/ui-smoke.sh   # in a GNOME session
 #
 # Headless:
 #   xvfb-run -a -s "-screen 0 1280x800x24" dbus-run-session -- \
 #     bash -c 'openbox & sleep 1; tests/ui-smoke.sh'
 set -euo pipefail
 
-PEEK=$(realpath "${1:-builddir/src/peek}")
-BACKEND=${PEEK_BACKEND:-ffmpeg}
-FORMAT=${PEEK_FORMAT:-gif}
+PEEKSMITH=$(realpath "${1:-builddir/src/peeksmith}")
+BACKEND=${PEEKSMITH_BACKEND:-ffmpeg}
+FORMAT=${PEEKSMITH_FORMAT:-gif}
 SRC=$(realpath "$(dirname "$0")/..")
 WORK=$(mktemp -d)
-LOG=$WORK/peek.log
-PEEK_PID=
+LOG=$WORK/peeksmith.log
+PEEKSMITH_PID=
 
 cleanup() {
-  [ -n "$PEEK_PID" ] && kill "$PEEK_PID" 2>/dev/null || true
+  [ -n "$PEEKSMITH_PID" ] && kill "$PEEKSMITH_PID" 2>/dev/null || true
   rm -rf "$WORK"
 }
 trap cleanup EXIT
@@ -32,19 +32,19 @@ export XDG_CONFIG_HOME=$WORK/config XDG_CACHE_HOME=$WORK/cache
 export GSETTINGS_BACKEND=keyfile GSETTINGS_SCHEMA_DIR=$WORK/schemas
 mkdir -p "$WORK/out" "$WORK/schemas"
 glib-compile-schemas "$SRC/data" --targetdir="$WORK/schemas"
-S=com.uploadedlobster.peek
+S=org.melroy.Peeksmith
 gsettings set $S recording-output-format "$FORMAT"
 gsettings set $S recording-start-delay 0
 gsettings set $S persist-save-folder "$WORK/out"
 gsettings set $S interface-show-notification false
 # Takes follow each other within a minute; avoid the overwrite confirmation.
-gsettings set $S interface-default-file-name-format "peek-%H-%M-%S"
+gsettings set $S interface-default-file-name-format "peeksmith-%H-%M-%S"
 
 fail() {
   echo "FAIL: $*"
   ffmpeg -loglevel error -y -f x11grab -i "$DISPLAY" -frames:v 1 "${UI_SMOKE_SHOT:-/tmp/ui-smoke-fail.png}" || true
   echo "--- windows"; xdotool search --onlyvisible --name . 2>/dev/null | while read -r w; do echo "$w $(xdotool getwindowname "$w")"; done
-  echo "--- peek.log (filtered)"
+  echo "--- peeksmith.log (filtered)"
   grep -v -E "dconf|Gtk-DEBUG|recording-area|GLib-GIO|Gdk-DEBUG" "$LOG" | tail -30
   exit 1
 }
@@ -61,7 +61,7 @@ expect() { # expect DESCRIPTION ACTUAL EXPECTED
   [ "$2" = "$3" ] || fail "$1: expected $3, got $2"
 }
 outputs() { ls "$WORK/out" | wc -l; }
-cache() { ls "$WORK/cache/peek" 2>/dev/null | wc -l; }
+cache() { ls "$WORK/cache/peeksmith" 2>/dev/null | wc -l; }
 
 toggle() { xdotool key ctrl+alt+r; }
 start_take() { toggle; wait_count "Recording area: " "$1"; sleep 0.5; }  # N-th take started
@@ -76,9 +76,9 @@ save_with_default_name() { # SAVES: how many "File saved" lines to expect afterw
   sleep 1
 }
 
-G_MESSAGES_DEBUG=all stdbuf -oL -eL "$PEEK" -b "$BACKEND" >"$LOG" 2>&1 &
-PEEK_PID=$!
-WID=$(xdotool search --sync --classname peek | tail -1)
+G_MESSAGES_DEBUG=all stdbuf -oL -eL "$PEEKSMITH" -b "$BACKEND" >"$LOG" 2>&1 &
+PEEKSMITH_PID=$!
+WID=$(xdotool search --sync --classname peeksmith | tail -1)
 sleep 1
 xdotool windowactivate --sync "$WID" 2>/dev/null || true
 
@@ -116,7 +116,7 @@ fi
 
 echo "3. recorder dies mid-recording, then record again"
 start_take 4; sleep 1
-pkill -9 -x -P "$PEEK_PID" ffmpeg
+pkill -9 -x -P "$PEEKSMITH_PID" ffmpeg
 wait_count "Recording canceled: " 1
 sleep 1
 expect "cache after failure" "$(cache)" 0

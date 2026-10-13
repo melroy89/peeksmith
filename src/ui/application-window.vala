@@ -16,7 +16,7 @@ using Peek.Recording;
 
 namespace Peek.Ui {
 
-  [GtkTemplate (ui = "/com/uploadedlobster/peek/application-window.ui")]
+  [GtkTemplate (ui = "/org/melroy/Peeksmith/application-window.ui")]
   class ApplicationWindow : Gtk.ApplicationWindow {
     public ScreenRecorder recorder { get; construct set; }
 
@@ -260,7 +260,7 @@ namespace Peek.Ui {
           recorder.cancel ();
         } else {
           var notification = build_standard_notification (_ ("Rendering animation…"));
-          notification.set_body (_ ("Peek will close when rendering is finished."));
+          notification.set_body (_ ("Peeksmith will close when rendering is finished."));
           this.application.send_notification ("background-rendering", notification);
         }
 
@@ -865,7 +865,7 @@ namespace Peek.Ui {
 #endif
 
       debug ("Showing desktop notification: %s", message.str);
-      this.application.send_notification ("peek-file-saved", notification);
+      this.application.send_notification ("peeksmith-file-saved", notification);
     }
 
     private static Notification build_standard_notification (string message) {

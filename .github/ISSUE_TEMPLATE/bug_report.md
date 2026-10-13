@@ -8,7 +8,7 @@ labels:
 **System Information**
 
 * Distribution package:
-* Peek version:
+* Peeksmith version:
 * GTK:
 * Additional info if applicable:
 
@@ -17,9 +17,9 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior, for example:
-1. Start peek
+1. Start peeksmith
 2. Record the screen for 5 seconds
-3. You should see the error: `(peek:5661): WARNING **`
+3. You should see the error: `(peeksmith:5661): WARNING **`
 
 **Expected behavior**
 A clear and concise description of what you expected to happen, if relevant to the bug.

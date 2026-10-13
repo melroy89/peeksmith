@@ -10,7 +10,7 @@ This software is licensed under the GNU General Public License
 using Gtk;
 
 namespace Peek.Ui {
-  [GtkTemplate (ui = "/com/uploadedlobster/peek/set-window-size-dialog.ui")]
+  [GtkTemplate (ui = "/org/melroy/Peeksmith/set-window-size-dialog.ui")]
   class SetWindowSizeDialog : Gtk.Dialog {
 
     private static SetWindowSizeDialog? instance;

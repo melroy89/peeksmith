@@ -58,19 +58,19 @@ namespace Peek {
 
       add_main_option ("start", 's',
         OptionFlags.IN_MAIN, OptionArg.NONE,
-        _ ("Start recording in all running Peek instances"), null);
+        _ ("Start recording in all running Peeksmith instances"), null);
 
       add_main_option ("stop", 'p',
         OptionFlags.IN_MAIN, OptionArg.NONE,
-        _ ("Stop recording in all running Peek instances"), null);
+        _ ("Stop recording in all running Peeksmith instances"), null);
 
       add_main_option ("toggle", 't',
         OptionFlags.IN_MAIN, OptionArg.NONE,
-        _ ("Toggle recording in all running Peek instances"), null);
+        _ ("Toggle recording in all running Peeksmith instances"), null);
 
       add_main_option ("no-headerbar", 0,
         OptionFlags.IN_MAIN, OptionArg.NONE,
-        _ ("Start Peek without the header bar"), null);
+        _ ("Start Peeksmith without the header bar"), null);
     }
 
     public override void activate () {
@@ -80,7 +80,7 @@ namespace Peek {
     public override void startup () {
       base.startup ();
       load_stylesheets ();
-      Environment.set_application_name (_ ("Peek"));
+      Environment.set_application_name (_ ("Peeksmith"));
       register_actions ();
 
 #if HAS_KEYBINDER
@@ -115,7 +115,7 @@ namespace Peek {
 
     protected override int handle_local_options (VariantDict options) {
       if (options.contains ("version")) {
-        stderr.printf ("%1$s %2$s\n", "Peek", Config.VERSION);
+        stderr.printf ("%1$s %2$s\n", "Peeksmith", Config.VERSION);
         return Posix.EXIT_SUCCESS;
       }
 
@@ -286,7 +286,7 @@ namespace Peek {
     }
 
     private static void load_stylesheets () {
-      load_stylesheet_by_name ("peek");
+      load_stylesheet_by_name ("peeksmith");
       string theme = DesktopIntegration.get_theme_name ();
       debug ("GTK theme: %s", theme);
       if (theme == "Breeze" || theme == "Breeze-Dark") {
@@ -295,7 +295,7 @@ namespace Peek {
     }
 
     private static void load_stylesheet_by_name (string name) {
-      var uri = "resource:///com/uploadedlobster/peek/css/%s.css".printf (name);
+      var uri = "resource:///org/melroy/Peeksmith/css/%s.css".printf (name);
       load_stylesheet_from_uri (uri);
     }
 
@@ -328,7 +328,7 @@ namespace Peek {
 
     private void show_wayland_warning () {
       var title = _ ("Native Wayland backend is unsupported");
-      var text = _ ("You are running Peek natively on Wayland, this is currently unsupported. Please start Peek using XWayland by setting <tt>GDK_BACKEND=x11</tt>.\n\nFor Details see the Peek <a href='https://github.com/phw/peek#why-no-native-wayland-support'>FAQ about Wayland support</a>.");
+      var text = _ ("You are running Peeksmith natively on Wayland, this is currently unsupported. Please start Peeksmith using XWayland by setting <tt>GDK_BACKEND=x11</tt>.\n\nFor Details see the Peeksmith <a href='https://github.com/melroy89/peeksmith#why-no-native-wayland-support'>FAQ about Wayland support</a>.");
       show_startup_warning (title, text);
     }
 

@@ -1,4 +1,6 @@
 # Version 1.6.0 - unreleased
+- Rename this fork to Peeksmith, including the executable, desktop integration,
+  application ID (`org.melroy.Peeksmith`), settings, cache, and translation domain
 - Integrated runtime fixes and regression tests from xl0/peek-ng through
   commit 57059e0 (https://github.com/xl0/peek-ng), including:
   - Restore MP4 recording with baseline H.264 and even output dimensions

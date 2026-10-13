@@ -12,7 +12,7 @@ namespace Peek {
   public class Utils {
     public static string get_temp_dir () {
       string cache_dir_path = Path.build_filename (
-        Environment.get_user_cache_dir (), "peek"
+        Environment.get_user_cache_dir (), "peeksmith"
       );
       var cache_dir = File.new_for_path (cache_dir_path);
 
@@ -32,7 +32,7 @@ namespace Peek {
 
     public static string create_temp_file (string extension) throws FileError {
       var temp_dir = get_temp_dir ();
-      var file_name = Path.build_filename (temp_dir, "peekXXXXXX." + extension);
+      var file_name = Path.build_filename (temp_dir, "peeksmithXXXXXX." + extension);
       var fd = FileUtils.mkstemp (file_name);
       FileUtils.close (fd);
       debug ("Temp file: %s\n", file_name);

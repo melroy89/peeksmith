@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/com/uploadedlobster/peek">
+  <gresource prefix="/org/melroy/Peeksmith">
     <!-- UI files -->
     <file preprocess="xml-stripblanks">application-window.ui</file>
     <file preprocess="xml-stripblanks">set-window-size-dialog.ui</file>
@@ -9,7 +9,7 @@
     <file preprocess="xml-stripblanks">about.ui</file>
 
     <!-- Stylesheets -->
-    <file>css/peek.css</file>
+    <file>css/peeksmith.css</file>
     <file>css/breeze.css</file>
     <file>css/breeze-dark.css</file>
   </gresource>

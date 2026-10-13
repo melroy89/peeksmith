@@ -1,21 +1,24 @@
-Name:           peek
+Name:           peeksmith
 Version:        1.5.1
 Release:        1%{?dist}
 Summary:        Simple screen recorder with an easy to use interface
 
 License:        GPLv3
-URL:            https://github.com/phw/peek
-Source0:        https://github.com/phw/peek/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+URL:            https://github.com/melroy89/peeksmith
+Source0:        https://github.com/melroy89/peeksmith/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 BuildRequires:  gcc
-BuildRequires:  cmake
+BuildRequires:  meson
+BuildRequires:  ninja-build
 BuildRequires:  vala
 BuildRequires:  vala-devel
 BuildRequires:  gettext
-BuildRequires:  pkgconfig(gtk+-3.0) >= 3.20
+BuildRequires:  pkgconfig(gtk+-3.0) >= 3.22
 BuildRequires:  pkgconfig(keybinder-3.0)
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
+BuildRequires:  libxml2
+BuildRequires:  pkgconfig(glib-2.0) >= 2.52
 BuildRequires:  txt2man
 BuildRequires:  gzip
 Requires:       ffmpeg >= 3
@@ -24,11 +27,11 @@ Recommends:     gstreamer1-plugins-ugly
 Suggests:       gifski
 
 %description
-Peek makes it easy to create short screencasts of a screen area. It was built
+Peeksmith makes it easy to create short screencasts of a screen area. It was built
 for the specific use case of recording screen areas, e.g. for easily showing UI
-features of your own apps or for showing a bug in bug reports. With Peek you
-simply place the Peek window over the area you want to record and press
-"Record". Peek is optimized for generating animated GIFs, but you can also
+features of your own apps or for showing a bug in bug reports. With Peeksmith you
+simply place the Peeksmith window over the area you want to record and press
+"Record". Peeksmith is optimized for generating animated GIFs, but you can also
 directly record to WebM or MP4 if you prefer.
 
 
@@ -37,14 +40,14 @@ directly record to WebM or MP4 if you prefer.
 
 
 %build
-%cmake -DBUILD_TESTS=OFF .
-%make_build
+%meson -Dbuild-tests=false
+%meson_build
 
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%make_install
-desktop-file-validate %{buildroot}/%{_datadir}/applications/com.uploadedlobster.%{name}.desktop
+%meson_install
+desktop-file-validate %{buildroot}/%{_datadir}/applications/org.melroy.Peeksmith.desktop
 appstream-util validate-relax --nonet %{buildroot}/%{_datadir}/metainfo/*.appdata.xml
 %find_lang %{name}
 
@@ -52,12 +55,13 @@ appstream-util validate-relax --nonet %{buildroot}/%{_datadir}/metainfo/*.appdat
 %files -f %{name}.lang
 %license LICENSE
 %{_bindir}/%{name}
-%{_datadir}/applications/com.uploadedlobster.%{name}.desktop
-%{_datadir}/metainfo/com.uploadedlobster.%{name}.appdata.xml
-%{_datadir}/dbus-1/services/com.uploadedlobster.%{name}.service
-%{_datadir}/glib-2.0/schemas/com.uploadedlobster.%{name}.gschema.xml
-%{_datadir}/icons/hicolor/*/apps/com.uploadedlobster.%{name}.png
-%{_datadir}/man/man1/%{name}.1.gz
+%{_datadir}/applications/org.melroy.Peeksmith.desktop
+%{_datadir}/metainfo/org.melroy.Peeksmith.appdata.xml
+%{_datadir}/dbus-1/services/org.melroy.Peeksmith.service
+%{_datadir}/glib-2.0/schemas/org.melroy.Peeksmith.gschema.xml
+%{_datadir}/icons/hicolor/scalable/apps/org.melroy.Peeksmith.svg
+%{_datadir}/icons/hicolor/symbolic/apps/org.melroy.Peeksmith-symbolic.svg
+%{_datadir}/man/man1/%{name}.1*
 
 
 %changelog

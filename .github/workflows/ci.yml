@@ -49,9 +49,14 @@ jobs:
       - name: Stage installation
         run: |
           DESTDIR="$PWD/staging" meson install -C build
-          test -x staging/usr/bin/peek
-          test -f staging/usr/share/applications/com.uploadedlobster.peek.desktop
-          test -f staging/usr/share/glib-2.0/schemas/com.uploadedlobster.peek.gschema.xml
+          test -x staging/usr/bin/peeksmith
+          test ! -e staging/usr/bin/peek
+          staging/usr/bin/peeksmith --version
+          test -f staging/usr/share/applications/org.melroy.Peeksmith.desktop
+          test -f staging/usr/share/glib-2.0/schemas/org.melroy.Peeksmith.gschema.xml
+          test -f staging/usr/share/dbus-1/services/org.melroy.Peeksmith.service
+          test -f staging/usr/share/icons/hicolor/scalable/apps/org.melroy.Peeksmith.svg
+          test -f staging/usr/share/man/man1/peeksmith.1
       - name: Upload build logs
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

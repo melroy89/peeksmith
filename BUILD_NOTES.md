@@ -1,15 +1,15 @@
-# Peek build and packaging notes
-This file contains information about building and packaging Peek. The
+# Peeksmith build and packaging notes
+This file contains information about building and packaging Peeksmith. The
 information here is mainly for developers and packagers, end users should
 refer to the [installation instructions in README.md](README.md#installation).
 For the source checkout instructions for this fork, see
-[building from source](README.md#from-source).
+[building from source](README.md#build-from-source).
 
 ## Building
 
 ### Building from source
 
-From inside the Peek source folder run:
+From inside the Peeksmith source folder run:
 
     meson setup --prefix=/usr builddir
     cd builddir
@@ -32,23 +32,24 @@ For an isolated X11 recording smoke test, install FFmpeg, Openbox, xdotool,
 Xvfb, xauth, and D-Bus, then run from the source root:
 
     xvfb-run -a -s "-screen 0 1280x800x24" dbus-run-session -- \
-      bash -c 'openbox & sleep 1; tests/ui-smoke.sh builddir/src/peek'
+      bash -c 'openbox & sleep 1; tests/ui-smoke.sh builddir/src/peeksmith'
 
 This drives recording, saving, cancellation, and recovery after recorder
-failure. Set `PEEK_FORMAT=mp4` (or `apng` / `webm`) to exercise other formats.
+failure. Set `PEEKSMITH_FORMAT=mp4` (or `apng` / `webm`) to exercise other formats.
 Run it on a disposable display: it grabs a global shortcut and records
 the screen. GNOME Shell coverage requires a real GNOME session and can use
-`PEEK_BACKEND=gnome-shell tests/ui-smoke.sh builddir/src/peek`.
+`PEEKSMITH_BACKEND=gnome-shell tests/ui-smoke.sh builddir/src/peeksmith`.
 
 
-### Running Peek with debug output
+### Running Peeksmith with debug output
 
-    G_MESSAGES_DEBUG=all ./peek
+    glib-compile-schemas --targetdir=data ../data
+    GSETTINGS_SCHEMA_DIR="$PWD/data" G_MESSAGES_DEBUG=all ./src/peeksmith
 
 ### Update translations
 
-    ninja peek-update-po
-    ninja peek-pot
+    ninja peeksmith-update-po
+    ninja peeksmith-pot
 
 
 ## Packaging
@@ -71,23 +72,7 @@ the screen. GNOME Shell coverage requires a real GNOME session and can use
  - libkeybinder-3.0-0
  - ffmpeg >= 3 with libx264, libx264rgb, and libvpx-vp9 encoders
 
-### Flatpak
+### Packaging
 
-Install the GNOME runtime and SDK as described in
-http://docs.flatpak.org/en/latest/getting-setup.html
-
-**Note:** Flatpak >= 0.9.3 is required for the build.
-
-Build Flatpak and place it in flatpak-repo repository:
-
-    flatpak-builder --repo=flatpak-repo com.uploadedlobster.peek \
-      --gpg-sign=B539AD7A5763EE9C1C2E4DE24C14923F47BF1A02 \
-      flatpak-stable.json --force-clean
-
-You can build for different architecture with the `--arch` parameter, e.g.
-`--arch=x86_64` or `--arch=i386`.
-
-Generate a `.flatpak` file for single file distribution:
-
-    flatpak build-bundle flatpak-repo peek-1.0.0-0.flatpak \
-      com.uploadedlobster.peek stable
+The recipes under `build-aux/` are legacy upstream infrastructure and are not
+verified Peeksmith distribution channels. Build from source as described above.

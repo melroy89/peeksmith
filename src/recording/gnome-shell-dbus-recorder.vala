@@ -83,7 +83,7 @@ namespace Peek.Recording {
             message.append("Missing codec or another active screen recording using org.gnome.Shell.Screencast?");
           }
 
-          message.append("\n\nPlease see the FAQ at https://github.com/phw/peek#what-is-the-cause-for-could-not-start-gnome-shell-recorder-errors");
+          message.append("\n\nPlease see the FAQ at https://github.com/melroy89/peeksmith#what-is-the-cause-for-could-not-start-gnome-shell-recorder-errors");
           throw new RecordingError.INITIALIZING_RECORDING_FAILED (message.str);
         }
       } catch (DBusError e) {

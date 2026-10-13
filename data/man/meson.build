@@ -9,15 +9,15 @@ else
   message('Found txt2man and gzip; man page will be built and installed')
   # We can't use install_man in combination with custom_target,
   # see https://github.com/mesonbuild/meson/issues/1550
-  manpage = custom_target('peek.1.txt',
+  manpage = custom_target('peeksmith.1.txt',
     command: [
       join_paths(meson.current_source_dir(), 'build_man.sh'),
       meson.project_name().to_upper(),
       meson.project_version(),
-      join_paths(meson.current_source_dir(), 'peek.1.txt'),
+      join_paths(meson.current_source_dir(), 'peeksmith.1.txt'),
       '@OUTPUT@'
     ],
-    output: 'peek.1',
+    output: 'peeksmith.1',
     install: true,
     install_dir: join_paths(get_option('mandir'), 'man1'))
 endif

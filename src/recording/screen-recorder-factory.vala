@@ -32,7 +32,7 @@ namespace Peek.Recording {
 #endif
       } else {
         throw new PeekError.NO_SUITABLE_SCREEN_RECORDER (
-          _ ("Peek requires FFmpeg or running GNOME Shell session."));
+          _ ("Peeksmith requires FFmpeg or running GNOME Shell session."));
       }
 
       stdout.printf ("Using screen recorder backend %s\n", recorder);

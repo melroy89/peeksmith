@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema path="/com/uploadedlobster/peek/" id="com.uploadedlobster.peek"
-    gettext-domain="peek">
+  <schema path="/org/melroy/Peeksmith/" id="org.melroy.Peeksmith"
+    gettext-domain="peeksmith">
     <key name="interface-open-file-manager" type="b">
       <default>false</default>
       <summary>Open file manager after saving</summary>
@@ -15,7 +15,7 @@
       <summary>Time in milliseconds for which the recording area size is displayed after resizing stops.</summary>
     </key>
     <key name="interface-default-file-name-format" type="s">
-      <default l10n="messages">"Peek %Y-%m-%d %H-%M"</default>
+      <default l10n="messages">"Peeksmith %Y-%m-%d %H-%M"</default>
       <summary>Default file name used. Can include date format specifiers. The extension will be added automatically.</summary>
     </key>
     <key name="interface-prefer-dark-theme" type="b">

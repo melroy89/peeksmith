@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2017 Philipp Wolfer <ph.wolfer@gmail.com> -->
 <component type="desktop">
-  <id>com.uploadedlobster.peek.desktop</id>
+  <id>org.melroy.Peeksmith.desktop</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0+</project_license>
-  <name>Peek</name>
+  <name>Peeksmith</name>
   <summary>Simple screen recorder with an easy to use interface</summary>
 
   <description>
     <p>
-      Peek makes it easy to create short screencasts of a screen area. It was
+      Peeksmith makes it easy to create short screencasts of a screen area. It was
       built for the specific use case of recording screen areas, e.g. for
       easily showing UI features of your own apps or for showing a bug in bug
-      reports. With Peek you simply place the Peek window over the area you
-      want to record and press "Record". Peek is optimized for generating
-      animated GIFs, but you can also directly record to WebM if you
+      reports. With Peeksmith you simply place the Peeksmith window over the area you
+      want to record and press "Record". Peeksmith is optimized for generating
+      animated GIFs, but you can also directly record to WebM or MP4 if you
       prefer.
     </p>
     <p>Features:</p>
     <ul>
       <li>Select a screen region to record</li>
       <li>Save recorded video as an optimized animated GIF</li>
-      <li>Record directly to WebM format</li>
+      <li>Record directly to WebM or MP4 format</li>
       <li>Simple user interface optimized for the task</li>
       <li>Automatically downscale recorded videos</li>
       <li>Support for HiDPI screens</li>
       <li>Works inside a GNOME Shell Wayland session (using XWayland)</li>
     </ul>
     <p>
-      Peek is not a general purpose screencast app with extended features but
+      Peeksmith is not a general purpose screencast app with extended features but
       rather focuses on the single task of creating small, silent screencasts of
       an area of the screen for creating GIF animations or silent WebM videos.
     </p>
@@ -63,20 +63,20 @@
     <kudo>Notifications</kudo>
   </kudos>
 
-  <url type="homepage">http://peek.uploadedlobster.com</url>
-  <!-- <url type="help">http://peek.uploadedlobster.com</url> -->
-  <url type="faq">https://github.com/phw/peek#frequently-asked-questions</url>
-  <url type="bugtracker">https://github.com/phw/peek/issues</url>
+  <url type="homepage">https://github.com/melroy89/peeksmith</url>
+  <!-- <url type="help">https://github.com/melroy89/peeksmith</url> -->
+  <url type="faq">https://github.com/melroy89/peeksmith#frequently-asked-questions</url>
+  <url type="bugtracker">https://github.com/melroy89/peeksmith/issues</url>
   <!-- <url type="translate">https://hosted.weblate.org/projects/peek/translations/</url> -->
 
-  <translation type="gettext">peek</translation>
+  <translation type="gettext">peeksmith</translation>
 
   <provides>
-    <binary>peek</binary>
+    <binary>peeksmith</binary>
   </provides>
 
-  <developer_name>Philipp Wolfer</developer_name>
-  <update_contact>ph.wolfer@gmail.com</update_contact>
+  <developer_name>Melroy van den Berg</developer_name>
+  <update_contact>melroy@melroy.org</update_contact>
 
   <content_rating type="oars-1.1" />
 
