@@ -19,6 +19,14 @@ From inside the Peeksmith source folder run:
 
 ### Run tests
 
+Build dependencies now include libsoup 3, JSON-GLib and GLib 2.70 or newer.
+The test suite also needs Xvfb and xauth. The Imgur tests start their own isolated
+X display and loopback HTTP server, use an in-memory settings backend, and never
+contact Imgur. They cover upload payloads, response validation, cancellation,
+errors and sharing-dialog behavior. A live upload requires a separately registered
+public Imgur client ID and is not part of automated qualification.
+
+
     ninja test
 
 The GitHub Actions workflow in `.github/workflows/ci.yml` builds the default

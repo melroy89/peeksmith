@@ -1,3 +1,11 @@
+# Version 1.6.1 - unreleased
+- Add explicit anonymous GIF uploads to Imgur from the window menu after saving
+- Configure a public Imgur client ID locally; no shared contributor credentials
+- Add cancellable asynchronous uploads, bounded reads, recoverable errors,
+  copy/open links, and copyable anonymous deletion details
+- Add libsoup 3 / JSON-GLib dependencies and upload regression tests
+- Modernize signal constants and process exit-status checks
+
 # Version 1.6.0 - 2026-10-13
 - Rename this fork to Peeksmith, including the executable, desktop integration,
   application ID (`org.melroy.Peeksmith`), settings, cache, and translation domain

@@ -25,6 +25,8 @@ peek_sources = [
   'recording/recording-config.vala',
   'recording/screen-recorder-factory.vala',
   'recording/screen-recorder.vala',
+  'sharing/imgur-client.vala',
+  'ui/share-dialog.vala',
   'ui/about-dialog.vala',
   'ui/application-window.vala',
   'ui/set-window-size-dialog.vala',
@@ -37,7 +39,6 @@ vala_args = [
   '--vapidir', join_paths(meson.current_source_dir(), 'vapi'),
   '--pkg', 'posix',
   '--header', 'application.h',
-  '--use-header',
   '--includedir', '../..',
   '--gresourcesdir', meson.current_build_dir(),
 ]
@@ -53,10 +54,12 @@ keybinder = dependency('keybinder-3.0', required: get_option('enable-keybinder')
 
 peek_deps = [
   dependency('cairo'),
-  dependency('gio-2.0', version: '>= 2.42'),
-  dependency('glib-2.0', version: '>= 2.52'),
+  dependency('gio-2.0', version: '>= 2.70'),
+  dependency('glib-2.0', version: '>= 2.70'),
   dependency('gmodule-2.0'),
   gtk,
+  dependency('libsoup-3.0'),
+  dependency('json-glib-1.0'),
 ]
 
 if keybinder.found()

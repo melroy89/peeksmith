@@ -1,4 +1,22 @@
 if get_option('build-tests')
+  imgur_tests = executable('test-imgur-client',
+    'test-imgur-client.vala',
+    join_paths(meson.source_root(), 'src/sharing/imgur-client.vala'),
+    join_paths(meson.source_root(), 'src/ui/share-dialog.vala'),
+    dependencies: [dependency('gtk+-3.0'), dependency('libsoup-3.0'), dependency('json-glib-1.0')],
+  )
+  test_schema = custom_target('sharing-test-schema',
+    input: '../data/org.melroy.Peeksmith.gschema.xml',
+    output: 'gschemas.compiled',
+    command: [find_program('glib-compile-schemas'), '--strict', '--targetdir', meson.current_build_dir(), join_paths(meson.source_root(), 'data')],
+    build_by_default: true,
+  )
+  test('Testing Imgur sharing', find_program('xvfb-run'),
+    args: ['-a', imgur_tests.full_path()], timeout: 30,
+    depends: [test_schema, imgur_tests],
+    env: ['NO_AT_BRIDGE=1', 'GSETTINGS_BACKEND=memory', 'GSETTINGS_SCHEMA_DIR=' + meson.current_build_dir(), 'LC_ALL=C.UTF-8'],
+  )
+
   # /desktop-integration/
   test_desktop_integration = executable('test-desktop-integration',
     'test-desktop-integration.vala',

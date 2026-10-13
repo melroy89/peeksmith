@@ -2,6 +2,11 @@
 <schemalist>
   <schema path="/org/melroy/Peeksmith/" id="org.melroy.Peeksmith"
     gettext-domain="peeksmith">
+    <key name="sharing-imgur-client-id" type="s">
+      <default>''</default>
+      <summary>Public Imgur application client ID</summary>
+      <description>Public client identifier for explicitly requested anonymous uploads. Never enter a client secret here.</description>
+    </key>
     <key name="interface-open-file-manager" type="b">
       <default>false</default>
       <summary>Open file manager after saving</summary>

@@ -81,6 +81,9 @@
   <content_rating type="oars-1.1" />
 
   <releases>
+    <release version="1.6.1" date="2026-10-13" type="development">
+      <description><p>Add explicit Imgur GIF sharing with configurable client ID, cancellation and recoverable errors.</p></description>
+    </release>
     <release version="1.6.0" date="2026-10-13">
       <description>
         <p>First Peeksmith release, continuing the original recorder with an

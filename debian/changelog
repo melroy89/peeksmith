@@ -1,3 +1,11 @@
+peeksmith (1.6.1-1) UNRELEASED; urgency=medium
+
+  * Add explicit Imgur GIF sharing with configurable public client ID,
+    cancellable uploads, recoverable errors and deletion details.
+  * Add libsoup 3 and JSON-GLib build dependencies and TLS certificates.
+
+ -- Melroy van den Berg <melroy@melroy.org>  Tue, 13 Oct 2026 20:00:00 +0200
+
 peeksmith (1.6.0-1) unstable; urgency=medium
 
   * First Peeksmith release with restored MP4 recording, recording reliability

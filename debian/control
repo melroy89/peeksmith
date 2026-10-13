@@ -3,9 +3,9 @@ Section: video
 Priority: optional
 Maintainer: Melroy van den Berg <melroy@melroy.org>
 Build-Depends: debhelper-compat (= 13), meson (>= 0.47), ninja-build,
- valac, libgtk-3-dev (>= 3.22), libglib2.0-dev (>= 2.52),
+ valac, libgtk-3-dev (>= 3.22), libglib2.0-dev (>= 2.70), libsoup-3.0-dev, libjson-glib-dev,
  libkeybinder-3.0-dev, gettext, libxml2-utils, txt2man,
- desktop-file-utils, appstream-util
+ desktop-file-utils, appstream-util, xvfb, xauth
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Homepage: https://github.com/melroy89/peeksmith
@@ -14,7 +14,7 @@ Vcs-Browser: https://github.com/melroy89/peeksmith
 
 Package: peeksmith
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ffmpeg (>= 3), libglib2.0-bin
+Depends: ${shlibs:Depends}, ${misc:Depends}, ffmpeg (>= 3), libglib2.0-bin, ca-certificates
 Recommends: gstreamer1.0-plugins-good, librsvg2-common
 Suggests: gifski, gstreamer1.0-plugins-ugly, gstreamer1.0-pipewire
 Description: Simple screen recorder for GIF, APNG, WebM and MP4
