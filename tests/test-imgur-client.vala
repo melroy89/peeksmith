@@ -107,6 +107,9 @@ private class UploadTests : Object {
       var copy = (Gtk.Button) find_widget (dialog, "Copy link");
       for (int i = 0; i < 200 && !copy.visible; i++) yield tick ();
       assert (copy.visible && requests == before + 1);
+      ((Gtk.Button) find_widget (dialog, "Copy deletion details")).clicked ();
+      assert (dialog.get_clipboard (Gdk.SELECTION_CLIPBOARD).wait_for_text ().contains (
+        "Authorization: Client-ID " + DEFAULT_CLIENT_ID));
     }
     dialog.destroy ();
     parent.destroy ();
@@ -138,7 +141,9 @@ private class UploadTests : Object {
     copy.clicked ();
     assert (dialog.get_clipboard (Gdk.SELECTION_CLIPBOARD).wait_for_text () == "https://i.imgur.com/example.gif");
     receipt.clicked ();
-    assert (dialog.get_clipboard (Gdk.SELECTION_CLIPBOARD).wait_for_text ().contains ("/image/delete123"));
+    var deletion_details = dialog.get_clipboard (Gdk.SELECTION_CLIPBOARD).wait_for_text ();
+    assert (deletion_details.contains ("/image/delete123"));
+    assert (deletion_details.contains ("Authorization: Client-ID test123"));
     dialog.destroy ();
     hold = true;
     dialog = new Peek.Ui.ShareDialog (parent, file, client);

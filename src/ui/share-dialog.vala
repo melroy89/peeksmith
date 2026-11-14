@@ -67,7 +67,8 @@ namespace Peek.Ui {
       receipt_button = new Gtk.Button.with_label (_("Copy deletion details"));
       receipt_button.clicked.connect (() => {
         get_clipboard (Gdk.SELECTION_CLIPBOARD).set_text (
-          "Image: " + result.link + "\nDELETE https://api.imgur.com/3/image/" + result.delete_hash + "\n", -1);
+          "Image: " + result.link + "\nDELETE https://api.imgur.com/3/image/" + result.delete_hash
+          + "\nAuthorization: Client-ID " + client_id + "\n", -1);
         status.label = _("Deletion details copied. Keep them private: they allow removal of your anonymous upload through the Imgur API.");
       });
       actions.add (receipt_button);
