@@ -23,8 +23,9 @@ From inside the Peeksmith source folder run:
 
 The GitHub Actions workflow in `.github/workflows/ci.yml` builds the default
 configuration and an alternate configuration covering the optional feature
-switches. A separate job runs all registered unit tests and validates desktop,
-AppStream (offline), and GSettings metadata under Xvfb and a D-Bus session.
+switches in Ubuntu 24.04 and 26.04 containers. A separate job runs all registered
+unit tests and validates desktop, AppStream (offline), and GSettings metadata
+under Xvfb and a D-Bus session.
 Build jobs also check a staged installation; CI does not exercise real screen
 capture or publish packages.
 
@@ -82,7 +83,7 @@ Installation requires RPM Fusion's full FFmpeg package for the x264 encoders.
 
 `.github/workflows/release.yml` supports a manual dry run and `vMAJOR.MINOR.PATCH`
 tag pushes. Both run the existing CI workflow, build native x86-64 packages for
-Ubuntu 22.04/24.04/26.04, Debian 12/13, and Fedora 44, and test dependency
+Ubuntu 24.04/26.04, Debian 12/13, and Fedora 44, and test dependency
 resolution, installed branding and GSettings, real X11 recording in all four formats, and removal
 in clean distribution containers. Source archives and SHA-256 checksums are
 collected into the downloadable `release-bundle` Actions artifact.
@@ -92,15 +93,15 @@ A manual run does not create a GitHub release. A matching version tag creates a
 the draft and publish it explicitly when ready. Packages are not GPG signed.
 Checksums detect corruption and are not a substitute for package signatures.
 
-For 1.6.0:
+For 1.6.1:
 
 1. Review release notes, confirm the date in AppStream and Debian/RPM changelogs,
    including the release date in `CHANGES.md`.
 2. Commit and push the release preparation, then run the release workflow
    manually and check the exact commit's complete build/install matrix.
-3. Tag that validated commit with `v1.6.0` and push the tag.
+3. Tag that validated commit with `v1.6.1` and push the tag.
 4. Check the tag workflow, download and verify the draft assets, then publish
-   the reviewed draft and update the README's preparation notice.
+   the reviewed draft.
 
 The recipes under `build-aux/` are legacy upstream infrastructure; Flatpak,
 Snap, and AppImage distribution are outside this native-package release.

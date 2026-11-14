@@ -67,17 +67,18 @@ preferences are not automatically migrated.
 ## Requirements
 ### Runtime
 
-- GTK+ >= 3.22
-- GLib >= 2.52
-- [libkeybinder3](https://github.com/kupferlauncher/keybinder)
-- FFmpeg >= 3 with libx264, libx264rgb, and libvpx-vp9 encoders
+- GTK+ >= 3.24
+- GLib >= 2.74
+- Cairo >= 1.16
+- [libkeybinder3](https://github.com/kupferlauncher/keybinder) >= 0.3.2 (optional, for global shortcuts)
+- FFmpeg >= 5.1 with libx264, libx264rgb, and libvpx-vp9 encoders
 - GStreamer 'Good' plugins (for recording on GNOME Shell)
 - [gifski](https://gif.ski/) (optional but recommended for improved GIF quality)
 
 ### Development
 
-- Vala compiler >= 0.22
-- Meson >= 0.47.0
+- Vala compiler >= 0.56
+- Meson >= 1.0
 - Gettext (>= 0.19 for localized .desktop entry)
 - txt2man (optional for building man page)
 
@@ -87,7 +88,7 @@ preferences are not automatically migrated.
 Download the latest Peeksmith release from the
 [releases page](https://github.com/melroy89/peeksmith/releases/latest).
 
-Native x86-64 packages target Ubuntu 22.04, 24.04 and 26.04, Debian 12 and 13,
+Native x86-64 packages target Ubuntu 24.04 and 26.04, Debian 12 and 13,
 and Fedora 44. Choose the asset matching your installed distribution version:
 
 - Debian/Ubuntu: `sudo apt install ./peeksmith-<version>-<distribution>-amd64.deb`
@@ -108,7 +109,7 @@ You can build and install Peeksmith using Meson with Ninja:
 
     git clone https://github.com/melroy89/peeksmith.git
     cd peeksmith
-    meson --prefix=/usr/local builddir
+    meson setup --prefix=/usr/local builddir
     cd builddir
     ninja
 

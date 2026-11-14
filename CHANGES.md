@@ -1,3 +1,11 @@
+# Version 1.6.1 - unreleased
+- Require Vala 0.56, Meson 1.0, GTK 3.24, GLib 2.74, Cairo 1.16,
+  and FFmpeg 5.1 or newer
+- Move the Ubuntu package baseline to 24.04 and build on Ubuntu 26.04 in CI
+- Refresh Flatpak, Snap, and AppImage dependencies, including FFmpeg 9.0.2
+  and gifski 1.34.0 for Flatpak
+- Use current GitHub Actions release tags and check for updates with Dependabot
+
 # Version 1.6.0 - 2026-10-13
 - Rename this fork to Peeksmith, including the executable, desktop integration,
   application ID (`org.melroy.Peeksmith`), settings, cache, and translation domain

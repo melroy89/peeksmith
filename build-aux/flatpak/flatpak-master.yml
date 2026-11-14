@@ -1,6 +1,6 @@
 app-id: org.melroy.Peeksmith
 runtime: org.gnome.Platform
-runtime-version: '42'
+runtime-version: '51'
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -46,6 +46,7 @@ modules:
       - --disable-doc
       - --disable-everything
       - --enable-bsf=vp9_superframe
+      - --enable-decoder=h264
       - --enable-decoder=libvpx_vp9
       - --enable-decoder=png
       - --enable-decoder=rawvideo
@@ -54,6 +55,7 @@ modules:
       - --enable-encoder=gif
       - --enable-encoder=libvpx_vp9
       - --enable-encoder=libx264
+      - --enable-encoder=libx264rgb
       - --enable-encoder=png
       - --enable-demuxer=image2
       - --enable-demuxer=matroska
@@ -61,6 +63,7 @@ modules:
       - --enable-muxer=gif
       - --enable-muxer=image2
       - --enable-muxer=mp4
+      - --enable-muxer=matroska
       - --enable-muxer=webm
       - --enable-filter=crop
       - --enable-filter=fps
@@ -71,16 +74,16 @@ modules:
       - --enable-indev=xcbgrab
     sources:
       - type: archive
-        url: https://ffmpeg.org/releases/ffmpeg-4.4.1.tar.xz
-        sha256: eadbad9e9ab30b25f5520fbfde99fae4a92a1ae3c0257a8d68569a4651e30e02
+        url: https://ffmpeg.org/releases/ffmpeg-9.0.2.tar.xz
+        sha256: 8c3850283eb25fa026482078a04051e0be17347b09ef81a0849bec15a96e002e
     modules:
-      - name: yasm
+      - name: nasm
         cleanup:
           - "*"
         sources:
           - type: archive
-            url: http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz
-            sha256: 3dce6601b495f5b3d45b59f7d2492a340ee7e84b5beca17e48f862502bd5603f
+            url: https://www.nasm.us/pub/nasm/releasebuilds/3.02/nasm-3.02.tar.xz
+            sha256: 87336eba53b4acfe917424ab5d500d2b0054d9f5148d35c2273ccf2cfb712f0d
       - name: libx264
         config-opts:
           - --enable-pic
@@ -88,7 +91,7 @@ modules:
         sources:
           - type: git
             url: https://code.videolan.org/videolan/x264.git
-            commit: baee400fa9ced6f5481a728138fed6e867b0ff7f
+            commit: b35605ace3ddf7c1a5d67a2eb553f034aef41d55
         cleanup:
           - /bin/x264
 
@@ -102,10 +105,10 @@ modules:
       - arm
     sources:
       - type: archive
-        url: https://github.com/ImageOptim/gifski/archive/refs/tags/1.8.1.tar.gz
-        sha256: 9c06e0124a5bde4d70fe44cc8be52ffc9b9099548fc34cac1db43c4a6ff8783c
+        url: https://codeload.github.com/ImageOptim/gifski/tar.gz/refs/tags/1.34.0
+        sha256: c9711473615cb20d7754e8296621cdd95cc068cb04b640f391cd71f8787b692c
     build-commands:
-      - cargo build --release --features=openmp --verbose
+      - cargo build --release --locked --verbose
       - install -Dm755 target/release/gifski /app/bin/gifski
 
   - name: peeksmith

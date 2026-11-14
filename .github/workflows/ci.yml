@@ -16,12 +16,17 @@ concurrency:
 
 jobs:
   build:
-    name: Build (${{ matrix.configuration }})
+    name: Build (${{ matrix.image }}, ${{ matrix.configuration }})
     runs-on: ubuntu-24.04
+    container: ${{ matrix.image }}
+    env:
+      DEBIAN_FRONTEND: noninteractive
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
+        image: ["ubuntu:24.04", "ubuntu:26.04"]
+        configuration: [default, alternate]
         include:
           - configuration: default
             options: -Denable-keybinder=enabled
@@ -32,15 +37,15 @@ jobs:
               -Denable-gnome-shell=false
               -Denable-open-file-manager=false
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
       - name: Install build dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends -y \
-            build-essential meson ninja-build pkg-config valac \
+          apt-get update
+          apt-get install --no-install-recommends -y \
+            ca-certificates git build-essential meson ninja-build pkg-config valac \
             libgtk-3-dev libkeybinder-3.0-dev gettext libxml2-utils txt2man
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
       - name: Configure
         env:
           BUILD_OPTIONS: ${{ matrix.options }}
@@ -60,9 +65,9 @@ jobs:
           test -f staging/usr/share/man/man1/peeksmith.1
       - name: Upload build logs
         if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        uses: actions/upload-artifact@v7.0.2
         with:
-          name: build-logs-${{ matrix.configuration }}
+          name: build-logs-${{ strategy.job-index }}-${{ matrix.configuration }}
           path: build/meson-logs/
           retention-days: 7
           if-no-files-found: ignore
@@ -72,7 +77,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
       - name: Install test dependencies
@@ -92,7 +97,7 @@ jobs:
         run: dbus-run-session -- xvfb-run -a meson test -C build --print-errorlogs
       - name: Upload test logs
         if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: test-logs
           path: build/meson-logs/

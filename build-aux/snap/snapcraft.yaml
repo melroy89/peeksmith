@@ -1,21 +1,20 @@
 name: peeksmith
-version: git
 adopt-info: peeksmith
 grade: stable
 confinement: strict
-base: core18
+base: core24
 
 apps:
   peeksmith:
     command: usr/bin/peeksmith
-    desktop: share/applications/org.melroy.Peeksmith.desktop
+    desktop: usr/share/applications/org.melroy.Peeksmith.desktop
     common-id: org.melroy.Peeksmith.desktop
-    extensions: [gnome-3-28]
+    extensions: [gnome]
     plugs:
       - gsettings
       - home
   ffmpeg:
-    command: ffmpeg
+    command: usr/bin/ffmpeg
 
 slots:
   session-dbus-interface:
@@ -40,11 +39,13 @@ parts:
       - libkeybinder-3.0-dev
       - gettext
       - valac
+      - libxml2-utils
+      - txt2man
     stage-packages:
       - libcanberra-gtk3-module
       - libkeybinder-3.0-0
     override-pull: |
-      snapcraftctl pull
+      craftctl default
       sed -i.bak -e 's|Icon=org.melroy.Peeksmith$|Icon=${SNAP}/usr/share/icons/hicolor/scalable/apps/org.melroy.Peeksmith.svg|g' data/org.melroy.Peeksmith.desktop.in
     prime:
       - -usr/lib/pkgconfig
@@ -68,8 +69,9 @@ parts:
 
   ffmpeg:
     plugin: autotools
-    source: https://ffmpeg.org/releases/ffmpeg-4.0.tar.xz
-    configflags:
+    source: https://ffmpeg.org/releases/ffmpeg-9.0.2.tar.xz
+    source-checksum: sha256/8c3850283eb25fa026482078a04051e0be17347b09ef81a0849bec15a96e002e
+    autotools-configure-parameters:
       - --prefix=/usr
       - --disable-debug
       - --disable-static
@@ -85,6 +87,7 @@ parts:
       - --disable-doc
       - --disable-everything
       - --enable-bsf=vp9_superframe
+      - --enable-decoder=h264
       - --enable-decoder=libvpx_vp9
       - --enable-decoder=png
       - --enable-decoder=rawvideo
@@ -93,6 +96,7 @@ parts:
       - --enable-encoder=gif
       - --enable-encoder=libvpx_vp9
       - --enable-encoder=libx264
+      - --enable-encoder=libx264rgb
       - --enable-encoder=png
       - --enable-demuxer=image2
       - --enable-demuxer=matroska
@@ -100,6 +104,7 @@ parts:
       - --enable-muxer=gif
       - --enable-muxer=image2
       - --enable-muxer=mp4
+      - --enable-muxer=matroska
       - --enable-muxer=webm
       - --enable-filter=crop
       - --enable-filter=fps
@@ -111,10 +116,12 @@ parts:
     build-packages:
       - libx264-dev
       - libvpx-dev
-      - yasm
+      - nasm
+      - libxcb1-dev
+      - libxcb-xfixes0-dev
     stage-packages:
-      - libx264-152
-      - libvpx5
+      - libx264-164
+      - libvpx9
       - libxcb-xfixes0
     prime:
       - -usr/include

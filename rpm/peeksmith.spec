@@ -1,5 +1,5 @@
 Name:           peeksmith
-Version:        1.6.0
+Version:        1.6.1
 Release:        1%{?dist}
 Summary:        Simple screen recorder with an easy to use interface
 
@@ -8,20 +8,21 @@ URL:            https://github.com/melroy89/peeksmith
 Source0:        https://github.com/melroy89/peeksmith/archive/refs/tags/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 BuildRequires:  gcc
-BuildRequires:  meson
+BuildRequires:  meson >= 1.0
 BuildRequires:  ninja-build
-BuildRequires:  vala
+BuildRequires:  vala >= 0.56
 BuildRequires:  vala-devel
 BuildRequires:  gettext
-BuildRequires:  pkgconfig(gtk+-3.0) >= 3.22
-BuildRequires:  pkgconfig(keybinder-3.0)
+BuildRequires:  pkgconfig(gtk+-3.0) >= 3.24
+BuildRequires:  pkgconfig(cairo) >= 1.16
+BuildRequires:  pkgconfig(keybinder-3.0) >= 0.3.2
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  libxml2
-BuildRequires:  pkgconfig(glib-2.0) >= 2.52
+BuildRequires:  pkgconfig(glib-2.0) >= 2.74
 BuildRequires:  txt2man
 BuildRequires:  gzip
-Requires:       ffmpeg >= 3
+Requires:       ffmpeg >= 5.1
 Requires:       gstreamer1-plugins-good >= 1.2
 Recommends:     gstreamer1-plugins-ugly
 Suggests:       gifski
@@ -70,6 +71,9 @@ appstream-util validate-relax --nonet %{buildroot}/%{_datadir}/metainfo/*.appdat
 
 
 %changelog
+* Sat Nov 14 2026 Melroy van den Berg <melroy@melroy.org> - 1.6.1-1
+- Refresh dependency requirements and packaging
+
 * Tue Oct 13 2026 Melroy van den Berg <melroy@melroy.org> - 1.6.0-1
 - First Peeksmith release with recording fixes and independent desktop identity
 

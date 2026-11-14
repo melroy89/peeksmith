@@ -48,14 +48,14 @@ enable_gnome_shell = get_option('enable-gnome-shell')
 enable_open_file_manager = get_option('enable-open-file-manager')
 
 # Dependencies
-gtk = dependency('gtk+-3.0', version: '>= 3.22')
-keybinder = dependency('keybinder-3.0', required: get_option('enable-keybinder'))
+gtk = dependency('gtk+-3.0', version: '>= 3.24')
+keybinder = dependency('keybinder-3.0', version: '>= 0.3.2', required: get_option('enable-keybinder'))
 
 peek_deps = [
-  dependency('cairo'),
-  dependency('gio-2.0', version: '>= 2.42'),
-  dependency('glib-2.0', version: '>= 2.52'),
-  dependency('gmodule-2.0'),
+  dependency('cairo', version: '>= 1.16'),
+  dependency('gio-2.0', version: '>= 2.74'),
+  dependency('glib-2.0', version: '>= 2.74'),
+  dependency('gmodule-2.0', version: '>= 2.74'),
   gtk,
 ]
 

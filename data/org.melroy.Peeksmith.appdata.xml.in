@@ -81,6 +81,12 @@
   <content_rating type="oars-1.1" />
 
   <releases>
+    <release version="1.6.1" date="2026-11-14">
+      <description>
+        <p>Refresh build dependencies, bundled recording tools, and packaging.
+        Ubuntu packages now require Ubuntu 24.04 or newer.</p>
+      </description>
+    </release>
     <release version="1.6.0" date="2026-10-13">
       <description>
         <p>First Peeksmith release, continuing the original recorder with an
