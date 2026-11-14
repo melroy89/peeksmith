@@ -1,6 +1,7 @@
 if get_option('build-tests')
   imgur_tests = executable('test-imgur-client',
     'test-imgur-client.vala',
+    sharing_config_source,
     join_paths(meson.source_root(), 'src/sharing/imgur-client.vala'),
     join_paths(meson.source_root(), 'src/ui/share-dialog.vala'),
     dependencies: [dependency('gtk+-3.0'), dependency('libsoup-3.0'), dependency('json-glib-1.0')],

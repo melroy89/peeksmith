@@ -6,7 +6,7 @@ namespace Peek.Ui {
     private File file;
     private Sharing.ImgurClient client;
     private GLib.Settings settings;
-    private Gtk.Entry client_id;
+    private string client_id;
     private Gtk.Entry link;
     private Gtk.Label status;
     private Gtk.Spinner spinner;
@@ -37,18 +37,8 @@ namespace Peek.Ui {
       filename.ellipsize = Pango.EllipsizeMode.MIDDLE;
       filename.xalign = 0;
       box.add (filename);
-      var label = new Gtk.Label (_("Public Imgur client ID (saved on this computer):"));
-      label.xalign = 0;
-      box.add (label);
-      client_id = new Gtk.Entry ();
-      client_id.text = settings.get_string ("sharing-imgur-client-id");
-      client_id.max_length = 128;
-      client_id.placeholder_text = _("Client ID, not client secret");
-      client_id.changed.connect (() => upload_button.sensitive = result == null
-        && cancellable == null && client_id.text.strip ().length > 0);
-      box.add (client_id);
-      box.add (new Gtk.LinkButton.with_label ("https://apidocs.imgur.com/",
-        _("Imgur API documentation and application registration")));
+      client_id = settings.get_string ("sharing-imgur-client-id").strip ();
+      if (client_id.length == 0) client_id = Sharing.DEFAULT_CLIENT_ID;
       status = new Gtk.Label ("");
       status.wrap = true;
       status.max_width_chars = 60;
@@ -84,9 +74,9 @@ namespace Peek.Ui {
       box.add (actions);
       cancel_button = (Gtk.Button) add_button (_("Close"), Gtk.ResponseType.CLOSE);
       upload_button = (Gtk.Button) add_button (_("Upload to Imgur"), Gtk.ResponseType.ACCEPT);
-      upload_button.sensitive = client_id.text.strip ().length > 0;
+      upload_button.sensitive = client_id.length > 0;
       response.connect ((response_id) => {
-        if (response_id == Gtk.ResponseType.ACCEPT && cancellable == null && result == null) {
+        if (response_id == Gtk.ResponseType.ACCEPT && cancellable == null && result == null && client_id.length > 0) {
           upload.begin ();
         } else if (cancellable != null) {
           cancellable.cancel ();
@@ -100,7 +90,11 @@ namespace Peek.Ui {
         if (cancellable != null) cancellable.cancel ();
       });
       show_all ();
-      status.hide ();
+      if (client_id.length == 0) {
+        status.label = _("Imgur sharing is not configured in this build. Set a public client ID in Preferences → Advanced sharing settings.");
+      } else {
+        status.hide ();
+      }
       spinner.hide ();
       link.hide ();
       actions.hide ();
@@ -114,10 +108,8 @@ namespace Peek.Ui {
     }
 
     private async void upload () {
-      var id = client_id.text.strip ();
-      settings.set_string ("sharing-imgur-client-id", id);
+      var id = client_id;
       cancellable = new Cancellable ();
-      client_id.sensitive = false;
       upload_button.sensitive = false;
       cancel_button.label = _("Cancel upload");
       status.show ();
@@ -148,8 +140,7 @@ namespace Peek.Ui {
         if (!closed) {
           spinner.stop ();
           spinner.hide ();
-          client_id.sensitive = result == null;
-          upload_button.sensitive = result == null && client_id.text.strip ().length > 0;
+          upload_button.sensitive = result == null && client_id.length > 0;
           cancel_button.label = _("Close");
           cancel_button.sensitive = true;
         }

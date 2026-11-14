@@ -4,4 +4,4 @@
 	dh $@ --buildsystem=meson
 
 override_dh_auto_configure:
-	dh_auto_configure -- -Dbuild-tests=true -Denable-keybinder=enabled
+	dh_auto_configure -- -Dbuild-tests=true -Denable-keybinder=enabled -Dimgur-client-id="$(PEEKSMITH_IMGUR_CLIENT_ID)"

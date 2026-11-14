@@ -12,6 +12,7 @@ private class UploadTests : Object {
   private uint status = 200;
   private int requests = 0;
   private bool hold = false;
+  private string expected_client_id = "test123";
   private Soup.ServerMessage? held;
 
   public UploadTests () throws Error {
@@ -24,7 +25,7 @@ private class UploadTests : Object {
       requests++;
       assert (path == "/3/image");
       assert (message.get_method () == "POST");
-      assert (message.get_request_headers ().get_one ("Authorization") == "Client-ID test123");
+      assert (message.get_request_headers ().get_one ("Authorization") == "Client-ID " + expected_client_id);
       var multipart = new Soup.Multipart.from_message (message.get_request_headers (), message.get_request_body ().flatten ());
       assert (multipart != null && multipart.get_length () == 2);
       unowned Soup.MessageHeaders headers;
@@ -71,6 +72,45 @@ private class UploadTests : Object {
   private static async void tick () {
     Timeout.add (10, () => { tick.callback (); return Source.REMOVE; });
     yield;
+  }
+
+  private static bool has_editable_entry (Gtk.Container container) {
+    foreach (var widget in container.get_children ()) {
+      if (widget is Gtk.Entry && ((Gtk.Entry) widget).editable) return true;
+      if (widget is Gtk.Container && has_editable_entry ((Gtk.Container) widget)) return true;
+    }
+    return false;
+  }
+
+  private async void test_default_client_id () throws Error {
+    var settings = new Settings ("org.melroy.Peeksmith");
+    settings.set_string ("sharing-imgur-client-id", "");
+    var parent = new Gtk.Window ();
+    var dialog = new Peek.Ui.ShareDialog (parent, file, client);
+    var upload = (Gtk.Button) find_widget (dialog, "Upload to Imgur");
+    assert (!has_editable_entry (dialog));
+    int before = requests;
+    yield tick ();
+    assert (requests == before);
+    if (DEFAULT_CLIENT_ID.length == 0) {
+      assert (!upload.sensitive);
+      assert (find_widget (dialog, "Imgur sharing is not configured") != null);
+      // A programmatic ACCEPT must not bypass missing configuration.
+      dialog.response (Gtk.ResponseType.ACCEPT);
+      yield tick ();
+      assert (requests == before);
+    } else {
+      assert (upload.sensitive);
+      assert (find_widget (dialog, "Imgur sharing is not configured") == null);
+      expected_client_id = DEFAULT_CLIENT_ID;
+      upload.clicked ();
+      var copy = (Gtk.Button) find_widget (dialog, "Copy link");
+      for (int i = 0; i < 200 && !copy.visible; i++) yield tick ();
+      assert (copy.visible && requests == before + 1);
+    }
+    dialog.destroy ();
+    parent.destroy ();
+    expected_client_id = "test123";
   }
 
   private async void test_dialog () throws Error {
@@ -185,7 +225,9 @@ private class UploadTests : Object {
     hold = false;
     result = yield client.upload (file, "test123");
     assert (result.link == "https://i.imgur.com/example.gif");
+    yield test_default_client_id ();
     yield test_dialog ();
+    yield test_default_client_id ();
     server.disconnect ();
     file.delete ();
     invalid.delete ();

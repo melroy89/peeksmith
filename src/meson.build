@@ -101,7 +101,7 @@ peek_sources += gnome.compile_resources('peeksmith-resources',
   dependencies: [about_ui_file]
 )
 
-executable('peeksmith', peek_sources,
+executable('peeksmith', peek_sources, sharing_config_source,
   vala_args: vala_args,
   dependencies: peek_deps,
   install: true,

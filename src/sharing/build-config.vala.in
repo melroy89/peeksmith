@@ -1,0 +1,4 @@
+/* Generated build configuration. Public identifier only. */
+namespace Peek.Sharing {
+  public const string DEFAULT_CLIENT_ID = "@IMGUR_CLIENT_ID@";
+}

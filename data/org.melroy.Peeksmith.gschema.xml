@@ -4,8 +4,8 @@
     gettext-domain="peeksmith">
     <key name="sharing-imgur-client-id" type="s">
       <default>''</default>
-      <summary>Public Imgur application client ID</summary>
-      <description>Public client identifier for explicitly requested anonymous uploads. Never enter a client secret here.</description>
+      <summary>Custom public Imgur application client ID</summary>
+      <description>Optional override for explicitly requested anonymous uploads. Leave empty to use the build default. Never enter a client secret here.</description>
     </key>
     <key name="interface-open-file-manager" type="b">
       <default>false</default>

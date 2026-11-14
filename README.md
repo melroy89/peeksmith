@@ -66,10 +66,13 @@ preferences are not automatically migrated.
 
 ## Sharing a recording
 After saving a GIF, choose **Share last recording…** from the window menu.
-Register an Imgur API application through the [Imgur API documentation](https://apidocs.imgur.com/)
-and enter its **public client ID** in the sharing dialog. The ID is saved locally;
-never enter a client secret. Click **Upload to Imgur** to share the recording.
-Saving a recording does not upload it.
+Official packages use Peeksmith's public Imgur application ID. Click **Upload to Imgur**
+to confirm sharing; recording and saving never upload automatically.
+
+Under **Preferences → Advanced sharing settings**, you can optionally set your own
+public Imgur client ID. Leave it empty to use the build default. Builds without a
+default require this override before uploading. Register your own application at
+[Imgur](https://api.imgur.com/oauth2/addclient); never enter a client secret.
 
 Anyone with the returned link can view your upload. Review recordings for private
 information before sharing. GIF files up to 10 MiB are supported; APNG, WebM and

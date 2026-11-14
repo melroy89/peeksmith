@@ -112,3 +112,21 @@ For 1.6.0:
 
 The recipes under `build-aux/` are legacy upstream infrastructure; Flatpak,
 Snap, and AppImage distribution are outside this native-package release.
+
+### Default Imgur application
+
+Set `-Dimgur-client-id=PUBLIC_ID` at Meson configuration time to embed Peeksmith's
+registered public application ID. Never embed a client secret. The default is
+empty for downstream builds; without an override, uploading is disabled with an
+explanation. Users can override the default in Preferences → Advanced sharing
+settings and clear the override to restore it.
+
+Native package builds accept `PEEKSMITH_IMGUR_CLIENT_ID=PUBLIC_ID` through
+`tools/build-package.sh deb|rpm`. Official release jobs obtain this public value
+from the GitHub repository variable `IMGUR_CLIENT_ID` and reject an empty value.
+Use the same registered application across releases. Flatpak maintainers must
+pass `-Dimgur-client-id=PUBLIC_ID` in the Peeksmith module's `config-opts`.
+
+Before release, qualify an explicit upload and anonymous deletion with a
+non-private disposable GIF and check the application's remaining Imgur quota.
+Automated tests only use a loopback service.

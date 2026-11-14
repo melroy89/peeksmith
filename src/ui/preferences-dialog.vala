@@ -132,6 +132,8 @@ namespace Peek.Ui {
         SettingsBindFlags.DEFAULT);
 
 
+      init_sharing_settings ();
+
       on_output_format_changed ();
       on_interface_open_file_manager_toggled (interface_open_file_manager);
       on_gifski_toggled (recording_gifski_enabled);
@@ -157,6 +159,28 @@ namespace Peek.Ui {
 #if DISABLE_OPEN_FILE_MANAGER
       interface_open_file_manager.hide ();
 #endif
+    }
+
+    private void init_sharing_settings () {
+      var advanced = new Gtk.Expander (_("Advanced sharing settings"));
+      advanced.margin = 12;
+      advanced.margin_top = 0;
+      var sharing_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 6);
+      sharing_box.margin = 12;
+      var sharing_label = new Gtk.Label (_("Custom public Imgur client ID (optional). Leave empty to use the build default. Never enter a client secret."));
+      sharing_label.wrap = true;
+      sharing_label.max_width_chars = 55;
+      sharing_label.xalign = 0;
+      sharing_box.add (sharing_label);
+      var client_id = new Gtk.Entry ();
+      client_id.max_length = 128;
+      client_id.placeholder_text = _("Use build default");
+      settings.bind ("sharing-imgur-client-id", client_id, "text", SettingsBindFlags.DEFAULT);
+      sharing_box.add (client_id);
+      sharing_box.add (new Gtk.LinkButton.with_label ("https://api.imgur.com/oauth2/addclient", _("Register an Imgur application")));
+      advanced.add (sharing_box);
+      ((Gtk.Box) get_child ()).pack_start (advanced, false, false, 0);
+      advanced.show_all ();
     }
 
     [GtkCallback]

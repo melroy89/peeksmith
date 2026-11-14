@@ -74,7 +74,14 @@ jobs:
         with:
           persist-credentials: false
       - name: Build package and run tests
-        run: tools/build-package.sh deb
+        env:
+          PEEKSMITH_IMGUR_CLIENT_ID: ${{ vars.IMGUR_CLIENT_ID }}
+        run: |
+          if [ -z "$PEEKSMITH_IMGUR_CLIENT_ID" ]; then
+            echo 'Set repository variable IMGUR_CLIENT_ID to the public Peeksmith application ID.' >&2
+            exit 1
+          fi
+          tools/build-package.sh deb
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-input-${{ matrix.target }}
@@ -153,7 +160,14 @@ jobs:
         with:
           persist-credentials: false
       - name: Build package and run tests
-        run: tools/build-package.sh rpm
+        env:
+          PEEKSMITH_IMGUR_CLIENT_ID: ${{ vars.IMGUR_CLIENT_ID }}
+        run: |
+          if [ -z "$PEEKSMITH_IMGUR_CLIENT_ID" ]; then
+            echo 'Set repository variable IMGUR_CLIENT_ID to the public Peeksmith application ID.' >&2
+            exit 1
+          fi
+          tools/build-package.sh rpm
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-input-fedora44

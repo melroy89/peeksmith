@@ -45,7 +45,7 @@ directly record to WebM or MP4 if you prefer.
 
 
 %build
-%meson -Dbuild-tests=true -Denable-keybinder=enabled
+%meson -Dbuild-tests=true -Denable-keybinder=enabled -Dimgur-client-id="%{?peeksmith_imgur_client_id}"
 %meson_build
 
 

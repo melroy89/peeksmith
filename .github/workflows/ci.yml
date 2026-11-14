@@ -68,7 +68,15 @@ jobs:
           if-no-files-found: ignore
 
   test:
-    name: Unit tests and metadata validation
+    name: Tests (${{ matrix.sharing }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sharing: no-default
+            client_id: ''
+          - sharing: built-in-default
+            client_id: testdefault123
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -85,7 +93,9 @@ jobs:
       - name: Check release metadata
         run: python3 tools/release-version.py
       - name: Configure
-        run: meson setup build --prefix=/usr -Dbuild-tests=true -Denable-keybinder=enabled
+        env:
+          IMGUR_CLIENT_ID: ${{ matrix.client_id }}
+        run: meson setup build --prefix=/usr -Dbuild-tests=true -Denable-keybinder=enabled -Dimgur-client-id="$IMGUR_CLIENT_ID"
       - name: Compile
         run: meson compile -C build
       - name: Run tests
@@ -94,7 +104,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: test-logs
+          name: test-logs-${{ matrix.sharing }}
           path: build/meson-logs/
           retention-days: 7
           if-no-files-found: ignore

@@ -4,6 +4,12 @@ set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
 RELEASE_VERSION=$(python3 tools/release-version.py)
+# Public identifier only; reject shell/build-language metacharacters.
+export PEEKSMITH_IMGUR_CLIENT_ID="${PEEKSMITH_IMGUR_CLIENT_ID:-}"
+if [[ "$PEEKSMITH_IMGUR_CLIENT_ID" =~ [^a-zA-Z0-9] ]]; then
+  echo 'PEEKSMITH_IMGUR_CLIENT_ID must contain only ASCII letters and digits' >&2
+  exit 2
+fi
 OUTPUT="$ROOT/dist"
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
@@ -31,7 +37,11 @@ case "${1:-}" in
   rpm)
     mkdir -p "$WORK/rpm/SOURCES"
     tar -C "$WORK" -czf "$WORK/rpm/SOURCES/peeksmith-$RELEASE_VERSION.tar.gz" "peeksmith-$RELEASE_VERSION"
-    rpmbuild -ba --define "_topdir $WORK/rpm" --define '_smp_mflags -j4' "$ROOT/rpm/peeksmith.spec"
+    RPM_SHARING_OPTIONS=()
+    if [ -n "$PEEKSMITH_IMGUR_CLIENT_ID" ]; then
+      RPM_SHARING_OPTIONS+=(--define "peeksmith_imgur_client_id $PEEKSMITH_IMGUR_CLIENT_ID")
+    fi
+    rpmbuild -ba --define "_topdir $WORK/rpm" --define '_smp_mflags -j4' "${RPM_SHARING_OPTIONS[@]}" "$ROOT/rpm/peeksmith.spec"
     find "$WORK/rpm/RPMS" "$WORK/rpm/SRPMS" -name 'peeksmith-[0-9]*.rpm' -exec cp {} "$OUTPUT/" \;
     ;;
   *) echo 'Usage: tools/build-package.sh deb|rpm' >&2; exit 2 ;;
