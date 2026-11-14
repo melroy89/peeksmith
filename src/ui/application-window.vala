@@ -172,9 +172,8 @@ namespace Peek.Ui {
         this.recorder.config, "gifski_quality",
         SettingsBindFlags.DEFAULT);
 
-      settings.bind ("recording-framerate",
-        this.recorder.config, "framerate",
-        SettingsBindFlags.DEFAULT);
+      this.recorder.config.output_format.bind_framerate (
+        settings, this.recorder.config, "framerate");
 
       settings.bind ("recording-downsample",
         this.recorder.config, "downsample",
@@ -196,8 +195,10 @@ namespace Peek.Ui {
         this, "save_folder",
         SettingsBindFlags.DEFAULT);
 
-      // Update record button label when recording format changes
+      // Update the frame-rate binding and record button label when the format changes
       this.recorder.config.notify["output-format"].connect ((pspec) => {
+        this.recorder.config.output_format.bind_framerate (
+          settings, this.recorder.config, "framerate");
         update_format_label ();
       });
 

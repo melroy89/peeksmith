@@ -172,6 +172,9 @@ format in the preferences. WebM is well supported by modern browsers, even
 though they are still not as universally supported by tools and online services
 as GIFs.
 
+MP4 recordings default to 30fps; other formats default to 10fps. The MP4 frame
+rate is saved separately from the other formats and can be changed in preferences.
+
 MP4 recording is available again in this fork. For GNOME Shell recording,
 MP4 encoding requires the GStreamer ugly plugins.
 

@@ -54,4 +54,23 @@ if get_option('build-tests')
     ],
   )
   test('Testing cli-screen-recorder', test_utils)
+
+  test_schema = custom_target('test-settings-schema',
+    input: '../data/org.melroy.Peeksmith.gschema.xml',
+    output: 'gschemas.compiled',
+    command: [find_program('glib-compile-schemas'), '--strict',
+      '--targetdir', meson.current_build_dir(),
+      join_paths(meson.project_source_root(), 'data')],
+  )
+  test_framerate_settings = executable('test-framerate-settings',
+    'test-framerate-settings.vala',
+    join_paths(meson.project_source_root(), 'src/defaults.vala'),
+    join_paths(meson.project_source_root(), 'src/recording/recording-config.vala'),
+    dependencies: [gtk],
+  )
+  test('Testing format frame rates', test_framerate_settings,
+    depends: test_schema,
+    env: ['GSETTINGS_BACKEND=memory',
+      'GSETTINGS_SCHEMA_DIR=' + meson.current_build_dir()],
+  )
 endif

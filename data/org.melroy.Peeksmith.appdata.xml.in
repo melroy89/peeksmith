@@ -83,7 +83,8 @@
   <releases>
     <release version="1.6.1" date="2026-11-14">
       <description>
-        <p>Refresh build dependencies, bundled recording tools, and packaging.
+        <p>Default MP4 recordings to 30 fps with a separate frame-rate preference.
+        Refresh build dependencies, bundled recording tools, and packaging.
         Ubuntu packages now require Ubuntu 24.04 or newer.</p>
       </description>
     </release>

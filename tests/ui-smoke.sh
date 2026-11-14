@@ -98,6 +98,10 @@ expect "saved files" "$(outputs)" 1
 expect "cache leftovers" "$(cache)" 0
 frames=$(ffprobe -v error -count_frames -select_streams v -show_entries stream=nb_read_frames -of csv=p=0 "$WORK"/out/*."$FORMAT")
 [ "$frames" -gt 5 ] || fail "$FORMAT has only $frames frames"
+if [ "$FORMAT" = mp4 ] && [ "$BACKEND" = ffmpeg ]; then
+  framerate=$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of csv=p=0 "$WORK"/out/*.mp4)
+  expect "default MP4 frame rate" "$framerate" 30/1
+fi
 
 echo "2. cancel by moving the window, then record again"
 start_take 2

@@ -11,7 +11,7 @@ namespace Peek {
 
   const string APP_ID = "org.melroy.Peeksmith";
 
-  const int DEFAULT_FRAMERATE = 15;
+  const int DEFAULT_FRAMERATE = 10;
   const int DEFAULT_DOWNSAMPLE = 1;
   const int DEFAULT_GIFSKI_QUALITY = 60;
 
@@ -20,6 +20,12 @@ namespace Peek {
     GIF,
     MP4,
     WEBM;
+
+    public void bind_framerate (Settings settings, Object target, string property) {
+      Settings.unbind (target, property);
+      string key = this == MP4 ? "recording-mp4-framerate" : "recording-framerate";
+      settings.bind (key, target, property, SettingsBindFlags.DEFAULT);
+    }
 
     public string to_string() {
       switch (this) {

@@ -1,4 +1,5 @@
 # Version 1.6.1 - unreleased
+- Default MP4 recordings to 30 fps and remember their frame rate separately
 - Require Vala 0.56, Meson 1.0, GTK 3.24, GLib 2.74, Cairo 1.16,
   and FFmpeg 5.1 or newer
 - Move the Ubuntu package baseline to 24.04 and build on Ubuntu 26.04 in CI

@@ -115,10 +115,6 @@ namespace Peek.Ui {
         recording_start_delay, "value",
         SettingsBindFlags.DEFAULT);
 
-      settings.bind ("recording-framerate",
-        recording_framerate, "value",
-        SettingsBindFlags.DEFAULT);
-
       settings.bind ("recording-downsample",
         recording_downsample, "value",
         SettingsBindFlags.DEFAULT);
@@ -168,6 +164,10 @@ namespace Peek.Ui {
 
     [GtkCallback]
     private void on_output_format_changed () {
+      if (settings != null) {
+        var format = is_format (OutputFormat.MP4) ? OutputFormat.MP4 : OutputFormat.GIF;
+        format.bind_framerate (settings, recording_framerate, "value");
+      }
       recording_gifski_settings.sensitive = is_format (OutputFormat.GIF);
       recording_capture_sound.sensitive = is_format (OutputFormat.MP4) || is_format (OutputFormat.WEBM);
     }
